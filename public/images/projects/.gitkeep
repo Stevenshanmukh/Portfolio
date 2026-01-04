@@ -1,0 +1,25 @@
+# Placeholder for project images
+
+Add your project images here with descriptive names:
+
+- sentiment-analysis.jpg
+- object-detection.jpg
+- climate-dashboard.jpg
+- housing-prediction.jpg
+- portfolio.jpg
+- neural-pruning.jpg
+
+Recommended image specifications:
+- Format: JPG or PNG
+- Dimensions: 1200x800px (3:2 aspect ratio)
+- File size: Under 500KB (optimize with tools like TinyPNG)
+- Use descriptive filenames
+
+Example:
+```
+public/images/projects/
+├── sentiment-analysis.jpg
+├── object-detection.jpg
+└── climate-dashboard.jpg
+```
+
