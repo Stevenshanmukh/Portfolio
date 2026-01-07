@@ -101,93 +101,153 @@ function ProjectCard({
   index: number;
   isInView: boolean;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.1 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className="group relative bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-2xl"
     >
-      {/* Featured Badge */}
+      {/* Featured Badge with Animation */}
       {project.featured && (
-        <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold rounded-full flex items-center space-x-1">
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: index * 0.1 + 0.3, type: "spring" }}
+          className="absolute top-4 right-4 z-10 px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold rounded-full flex items-center space-x-1 shadow-lg"
+        >
           <Sparkles className="w-3 h-3" />
           <span>Featured</span>
-        </div>
+        </motion.div>
       )}
 
-      {/* Image */}
+      {/* Image with Zoom Effect */}
       <div className="relative w-full h-48 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 overflow-hidden">
-        <div className="w-full h-full flex items-center justify-center">
+        <motion.div
+          className="w-full h-full flex items-center justify-center"
+          animate={{ scale: isHovered ? 1.1 : 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <div className="text-center space-y-2 p-4">
-            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+            <motion.div
+              animate={{
+                rotate: isHovered ? 360 : 0,
+                scale: isHovered ? 1.1 : 1,
+              }}
+              transition={{ duration: 0.6 }}
+              className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center"
+            >
               <Github className="w-8 h-8 text-white" />
-            </div>
+            </motion.div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Project Image
             </p>
           </div>
-        </div>
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        </motion.div>
+        {/* Gradient Overlay */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
       </div>
 
       {/* Content */}
       <div className="p-6 space-y-4">
-        {/* Title */}
-        <div>
-          <h3 className="text-xl font-bold mb-2 group-hover:text-blue-500 transition-colors">
+        {/* Title with Underline Animation */}
+        <div className="relative">
+          <h3 className="text-xl font-bold group-hover:text-blue-500 transition-colors">
             {project.title}
           </h3>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
-            {project.description}
-          </p>
+          <motion.div
+            className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500"
+            initial={{ width: 0 }}
+            animate={{ width: isHovered ? "100%" : 0 }}
+            transition={{ duration: 0.3 }}
+          />
         </div>
+        
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
+          {project.description}
+        </p>
 
-        {/* Tags */}
+        {/* Tags with Stagger Animation */}
         <div className="flex flex-wrap gap-2">
           {project.tags.slice(0, 3).map((tag, idx) => (
-            <span
+            <motion.span
               key={idx}
-              className="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs rounded-md font-medium"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: index * 0.1 + idx * 0.05 }}
+              whileHover={{ scale: 1.1, y: -2 }}
+              className="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs rounded-md font-medium cursor-default"
             >
               {tag}
-            </span>
+            </motion.span>
           ))}
           {project.tags.length > 3 && (
-            <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-xs rounded-md font-medium">
+            <motion.span
+              initial={{ opacity: 0, scale: 0 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: index * 0.1 + 0.15 }}
+              className="px-2 py-1 bg-neutral-100 dark:bg-neutral-700 text-xs rounded-md font-medium"
+            >
               +{project.tags.length - 3}
-            </span>
+            </motion.span>
           )}
         </div>
 
-        {/* Links */}
+        {/* Links with Icon Animation */}
         <div className="flex items-center space-x-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
           {project.github && (
             <Link
               href={project.github}
               target="_blank"
-              className="flex items-center space-x-1 text-sm text-neutral-600 dark:text-neutral-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+              className="group/link flex items-center space-x-1 text-sm text-neutral-600 dark:text-neutral-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
             >
-              <Github className="w-4 h-4" />
-              <span>View on GitHub</span>
+              <motion.div
+                whileHover={{ rotate: 360, scale: 1.2 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Github className="w-4 h-4" />
+              </motion.div>
+              <span>GitHub</span>
             </Link>
           )}
           {project.demo && (
             <Link
               href={project.demo}
               target="_blank"
-              className="flex items-center space-x-1 text-sm text-neutral-600 dark:text-neutral-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+              className="group/link flex items-center space-x-1 text-sm text-neutral-600 dark:text-neutral-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
             >
-              <ExternalLink className="w-4 h-4" />
-              <span>View Project</span>
+              <motion.div
+                whileHover={{ x: 3, y: -3 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ExternalLink className="w-4 h-4" />
+              </motion.div>
+              <span>Demo</span>
             </Link>
           )}
           {!project.github && !project.demo && (
-            <span className="text-xs text-neutral-400">More details coming soon</span>
+            <span className="text-xs text-neutral-400">Details coming soon</span>
           )}
         </div>
       </div>
+
+      {/* Hover Glow Effect */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-500/5 to-transparent" />
+      </motion.div>
     </motion.div>
   );
 }
