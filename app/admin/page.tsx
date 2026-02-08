@@ -84,7 +84,7 @@ function Input({ label, value, onChange, placeholder, type = "text" }: {
       <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors" />
     </div>
   );
 }
@@ -98,7 +98,7 @@ function TextArea({ label, value, onChange, rows = 3, placeholder }: {
       <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
       <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={rows}
         placeholder={placeholder}
-        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors resize-y" />
+        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors resize-y" />
     </div>
   );
 }
@@ -110,7 +110,7 @@ function Select({ label, value, onChange, options }: {
     <div>
       <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+        className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors">
         {options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
       </select>
     </div>
@@ -131,7 +131,7 @@ function TagsInput({ label, tags, onChange, placeholder = "Type and press Enter"
       <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
       <div className="flex flex-wrap gap-2 mb-2">
         {tags.map((tag, i) => (
-          <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-md">
+          <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/10 text-neutral-200 text-sm rounded-md">
             {tag}
             <button onClick={() => onChange(tags.filter((_, idx) => idx !== i))} className="hover:text-red-400 transition-colors">×</button>
           </span>
@@ -141,8 +141,8 @@ function TagsInput({ label, tags, onChange, placeholder = "Type and press Enter"
         <input value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
           placeholder={placeholder}
-          className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors" />
-        <button onClick={addTag} className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors">
+          className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition-colors" />
+        <button onClick={addTag} className="px-3 py-2 bg-white/10 text-neutral-300 rounded-lg hover:bg-white/15 transition-colors">
           <Plus className="w-4 h-4" />
         </button>
       </div>
@@ -167,7 +167,7 @@ function SectionCard({ title, description, children }: {
 function Toast({ message, type = "success" }: { message: string; type?: "success" | "info" | "error" }) {
   return (
     <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-xl text-sm font-medium ${
-      type === "success" ? "bg-green-500/90 text-white" : type === "error" ? "bg-red-500/90 text-white" : "bg-blue-500/90 text-white"
+      type === "success" ? "bg-green-500/90 text-white" : type === "error" ? "bg-red-500/90 text-white" : "bg-neutral-700 text-white"
     }`}>
       {type === "success" ? <Check className="w-4 h-4" /> : type === "error" ? <AlertCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
       {message}
@@ -213,7 +213,7 @@ function FileUpload({ label, currentUrl, storagePath, onUploaded, accept = "imag
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-          dragOver ? "border-blue-500 bg-blue-500/10" : "border-neutral-700 hover:border-neutral-600"
+          dragOver ? "border-neutral-500 bg-white/5" : "border-neutral-700 hover:border-neutral-600"
         }`}
       >
         {currentUrl && accept.startsWith("image") ? (
@@ -225,7 +225,7 @@ function FileUpload({ label, currentUrl, storagePath, onUploaded, accept = "imag
         ) : null}
 
         {uploading ? (
-          <div className="flex items-center justify-center gap-2 text-blue-400">
+          <div className="flex items-center justify-center gap-2 text-neutral-300">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span className="text-sm">Uploading...</span>
           </div>
@@ -280,8 +280,8 @@ function AuthForm({ onAuth }: { onAuth: (session: Session) => void }) {
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-2xl p-8 space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto bg-blue-500/10 rounded-full flex items-center justify-center">
-            <Lock className="w-7 h-7 text-blue-500" />
+          <div className="w-14 h-14 mx-auto bg-white/10 rounded-full flex items-center justify-center">
+            <Lock className="w-7 h-7 text-neutral-300" />
           </div>
           <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
           <p className="text-sm text-neutral-400">{isSignUp ? "Create your admin account" : "Sign in to manage your portfolio"}</p>
@@ -301,7 +301,7 @@ function AuthForm({ onAuth }: { onAuth: (session: Session) => void }) {
         {message && <p className="text-green-400 text-sm text-center">{message}</p>}
 
         <button type="submit" disabled={loading}
-          className="w-full py-3 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+          className="w-full py-3 bg-white hover:bg-neutral-200 disabled:opacity-50 text-neutral-950 font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {isSignUp ? "Create Account" : "Sign In"}
         </button>
@@ -380,7 +380,7 @@ function EducationEditor({ data, onChange }: {
           <TagsInput label="Skills / Coursework" tags={edu.skills} onChange={(tags) => updateEntry(idx, "skills", tags)} placeholder="Add a skill" />
         </div>
       ))}
-      <button onClick={addEntry} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-blue-500 text-neutral-400 hover:text-blue-400 rounded-lg flex items-center justify-center gap-2 transition-colors">
+      <button onClick={addEntry} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-neutral-500 text-neutral-400 hover:text-neutral-200 rounded-lg flex items-center justify-center gap-2 transition-colors">
         <Plus className="w-4 h-4" /> Add Education Entry
       </button>
     </SectionCard>
@@ -420,8 +420,8 @@ function SkillsEditor({ data, onChange }: {
         <input value={newCategory} onChange={(e) => setNewCategory(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCategory(); } }}
           placeholder="New category name..."
-          className="flex-1 px-3 py-2.5 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors" />
-        <button onClick={addCategory} className="px-4 py-2.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg transition-colors flex items-center gap-2">
+          className="flex-1 px-3 py-2.5 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition-colors" />
+        <button onClick={addCategory} className="px-4 py-2.5 bg-white/10 text-neutral-300 hover:bg-white/15 rounded-lg transition-colors flex items-center gap-2">
           <Plus className="w-4 h-4" /> Add Category
         </button>
       </div>
@@ -454,7 +454,7 @@ function ProjectsEditor({ data, onChange }: {
           <div key={idx}>
             <div onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
               className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-                editingIdx === idx ? "bg-blue-500/20 border border-blue-500/30" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"
+                editingIdx === idx ? "bg-white/5 border border-neutral-600" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"
               }`}>
               <div className="flex items-center gap-3 min-w-0">
                 <ChevronRight className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${editingIdx === idx ? "rotate-90" : ""}`} />
@@ -484,7 +484,7 @@ function ProjectsEditor({ data, onChange }: {
                   <Input label="Demo URL" value={project.demo_url} onChange={(v) => updateProject(idx, "demo_url", v)} placeholder="https://your-demo.com" />
                 </div>
                 <label className="flex items-center gap-3 px-3 py-2.5 bg-neutral-800 border border-neutral-700 rounded-lg cursor-pointer hover:border-neutral-600 transition-colors">
-                  <input type="checkbox" checked={project.featured} onChange={(e) => updateProject(idx, "featured", e.target.checked)} className="w-4 h-4 accent-blue-500" />
+                  <input type="checkbox" checked={project.featured} onChange={(e) => updateProject(idx, "featured", e.target.checked)} className="w-4 h-4 accent-neutral-400" />
                   <span className="text-sm text-neutral-300">Featured Project ⭐</span>
                 </label>
               </div>
@@ -492,7 +492,7 @@ function ProjectsEditor({ data, onChange }: {
           </div>
         ))}
       </div>
-      <button onClick={addProject} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-blue-500 text-neutral-400 hover:text-blue-400 rounded-lg flex items-center justify-center gap-2 transition-colors">
+      <button onClick={addProject} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-neutral-500 text-neutral-400 hover:text-neutral-200 rounded-lg flex items-center justify-center gap-2 transition-colors">
         <Plus className="w-4 h-4" /> Add New Project
       </button>
     </SectionCard>
@@ -724,7 +724,7 @@ export default function AdminPage() {
         await fetch("/api/revalidate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ secret: "portfolio-revalidate-2026" }),
+          body: JSON.stringify({ secret: process.env.NEXT_PUBLIC_REVALIDATION_SECRET || "" }),
         });
       } catch {
         // revalidation is non-critical — data is saved regardless
@@ -748,7 +748,7 @@ export default function AdminPage() {
   if (checkingAuth) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-neutral-400 animate-spin" />
       </div>
     );
   }
@@ -760,7 +760,7 @@ export default function AdminPage() {
   if (loading || !data) {
     return (
       <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-neutral-400 animate-spin" />
         <p className="text-neutral-400 text-sm">Loading portfolio data...</p>
       </div>
     );
@@ -778,7 +778,7 @@ export default function AdminPage() {
             </svg>
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-md flex items-center justify-center">
+            <div className="w-7 h-7 bg-neutral-700 rounded-md flex items-center justify-center">
               <span className="text-white font-bold text-xs">SL</span>
             </div>
             <span className="font-semibold text-sm">Admin Dashboard</span>
@@ -788,7 +788,7 @@ export default function AdminPage() {
         <div className="flex items-center gap-2">
           <span className="hidden md:block text-xs text-neutral-500 mr-2">{session.user.email}</span>
           <button onClick={saveData} disabled={saving}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-blue-500 hover:bg-blue-600 disabled:opacity-50 rounded-lg transition-colors font-medium">
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-white text-neutral-950 hover:bg-neutral-200 disabled:opacity-50 rounded-lg transition-colors font-medium">
             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             <span className="hidden sm:inline">{saving ? "Saving..." : "Save & Publish"}</span>
             <span className="sm:hidden">{saving ? "..." : "Save"}</span>
@@ -811,7 +811,7 @@ export default function AdminPage() {
               return (
                 <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === tab.id ? "bg-blue-500/20 text-blue-400" : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                    activeTab === tab.id ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white hover:bg-neutral-800"
                   }`}>
                   <Icon className="w-4 h-4 shrink-0" />
                   {tab.label}

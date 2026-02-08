@@ -7,6 +7,7 @@ import { SkillsSection } from "@/components/sections/SkillsSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { PageTransition } from "@/components/ui/PageTransition";
+import { StarsWrapper } from "@/components/ui/StarsWrapper";
 import { PortfolioProvider } from "@/lib/portfolio-context";
 import { fetchAllPortfolioData } from "@/lib/supabase/queries";
 import {
@@ -89,17 +90,19 @@ export default async function Home() {
       />
 
       <PageTransition>
-        <div className="min-h-screen bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
-          <Navbar />
-          <main>
-            <HeroSection />
-            <AboutSection />
-            <SkillsSection />
-            <ProjectsSection />
-            <ContactSection />
-          </main>
-          <Footer />
-        </div>
+        <StarsWrapper>
+          <div className="min-h-screen text-neutral-50">
+            <Navbar />
+            <main>
+              <HeroSection />
+              <AboutSection />
+              <SkillsSection />
+              <ProjectsSection />
+              <ContactSection />
+            </main>
+            <Footer />
+          </div>
+        </StarsWrapper>
       </PageTransition>
     </PortfolioProvider>
   );

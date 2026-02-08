@@ -1,16 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "motion/react";
 import { useRef } from "react";
-import {
-  Code,
-  Brain,
-  Database,
-  BarChart3,
-  Wrench,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Code, Brain, Database, BarChart3, Wrench, type LucideIcon } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -29,87 +21,57 @@ export function SkillsSection() {
   const skillCategories = Object.entries(skills);
 
   return (
-    <section id="skills" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-neutral-900/50" ref={ref}>
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
+    <section
+      id="skills"
+      className="py-24 md:py-32 px-6 lg:px-8"
+      ref={ref}
+    >
+      <div className="max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12 sm:mb-16"
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          {/* Section header */}
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-4">
+            Expertise
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-4 text-white">
             Technical Proficiency
           </h2>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-neutral-400 max-w-xl mb-16">
             A comprehensive toolkit for Data Science, Machine Learning, and
             Software Engineering.
           </p>
-        </motion.div>
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {skillCategories.map(([category, data], index) => {
-            const IconComponent = iconMap[data.icon] || Code;
-
-            return (
-              <motion.div
-                key={category}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group p-6 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-xl"
-              >
-                {/* Header */}
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className="p-3 bg-blue-500/10 rounded-lg group-hover:bg-blue-500 transition-colors">
-                    <IconComponent className="w-6 h-6 text-blue-500 group-hover:text-white transition-colors" />
+          {/* Skills grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {skillCategories.map(([category, data]) => (
+              <div key={category} className="p-6 border border-neutral-700/50 rounded-2xl hover:border-neutral-600 transition-colors space-y-4 bg-white/[0.02]">
+                <div>
+                  <div className="flex items-center gap-3 mb-1">
+                    {(() => {
+                      const Icon = iconMap[data.icon];
+                      return Icon ? <Icon className="w-5 h-5 text-neutral-400 shrink-0" /> : null;
+                    })()}
+                    <h3 className="text-lg font-medium text-white">{category}</h3>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2">{category}</h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                      {data.description}
-                    </p>
-                  </div>
+                  <p className="text-sm text-neutral-400 leading-relaxed">
+                    {data.description}
+                  </p>
                 </div>
-
-                {/* Skills */}
                 <div className="flex flex-wrap gap-2">
                   {data.items.map((skill, idx) => (
-                    <motion.span
+                    <span
                       key={idx}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ duration: 0.3, delay: index * 0.1 + idx * 0.05 }}
-                      className="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 rounded-lg text-sm font-medium hover:bg-blue-500 hover:text-white transition-all cursor-default"
+                      className="px-3 py-1.5 border border-neutral-700 rounded-lg text-sm text-neutral-400"
                     >
                       {skill}
-                    </motion.span>
+                    </span>
                   ))}
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-12 text-center"
-        >
-          <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-            Always learning and expanding my technical arsenal
-          </p>
-          <div className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-medium">
-            <span>Continuously Growing</span>
-            <motion.span
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              ⚡
-            </motion.span>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>

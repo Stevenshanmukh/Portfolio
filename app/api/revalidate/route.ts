@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
     const { secret } = await request.json();
 
     // Verify the secret to prevent unauthorized revalidation
-    if (secret !== process.env.REVALIDATION_SECRET) {
+    const expectedSecret = process.env.REVALIDATION_SECRET || process.env.NEXT_PUBLIC_REVALIDATION_SECRET;
+    if (!expectedSecret || secret !== expectedSecret) {
       return NextResponse.json({ error: "Invalid secret" }, { status: 401 });
     }
 
