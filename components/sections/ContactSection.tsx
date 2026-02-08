@@ -3,11 +3,12 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Mail, Linkedin, Github, Copy, Check, Send, ArrowUpRight } from "lucide-react";
+import { Linkedin, Github, Copy, Check, Send, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { personalInfo, socialLinks } from "@/data/portfolio";
+import { usePortfolio } from "@/lib/portfolio-context";
 
 export function ContactSection() {
+  const { personalInfo, socialLinks } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [copied, setCopied] = useState(false);
@@ -32,9 +33,6 @@ export function ContactSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <p className="text-sm font-semibold text-blue-500 uppercase tracking-wide mb-2">
-            Get in Touch
-          </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             Ready to collaborate?
           </h2>
@@ -169,4 +167,3 @@ export function ContactSection() {
     </section>
   );
 }
-

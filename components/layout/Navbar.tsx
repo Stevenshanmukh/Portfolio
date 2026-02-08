@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePortfolio } from "@/lib/portfolio-context";
 
 const navItems = [
   { label: "About", href: "#about" },
@@ -14,6 +15,7 @@ const navItems = [
 ];
 
 export function Navbar() {
+  const { personalInfo } = usePortfolio();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -42,10 +44,16 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">SL</span>
+              <span className="text-white font-bold text-xl">
+                {personalInfo.name
+                  .split(" ")
+                  .map((w) => w[0])
+                  .join("")
+                  .slice(0, 2)}
+              </span>
             </div>
             <span className="font-bold text-lg hidden sm:block">
-              Steven Lagadapati
+              {personalInfo.name}
             </span>
           </Link>
 
@@ -122,5 +130,3 @@ export function Navbar() {
     </motion.nav>
   );
 }
-
-

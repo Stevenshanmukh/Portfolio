@@ -10,9 +10,10 @@ import {
   BarChart3,
   Wrench,
 } from "lucide-react";
-import { skills } from "@/data/portfolio";
+import type { LucideIcon } from "lucide-react";
+import { usePortfolio } from "@/lib/portfolio-context";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   Code,
   Brain,
   Database,
@@ -21,6 +22,7 @@ const iconMap: Record<string, any> = {
 };
 
 export function SkillsSection() {
+  const { skills } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
@@ -36,10 +38,6 @@ export function SkillsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12 sm:mb-16"
         >
-          <p className="text-sm font-semibold text-blue-500 uppercase tracking-wide mb-2">
-            <Code className="w-4 h-4 inline mr-2" />
-            Technical Proficiency
-          </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             Technical Proficiency
           </h2>
@@ -118,4 +116,3 @@ export function SkillsSection() {
     </section>
   );
 }
-

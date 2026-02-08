@@ -37,5 +37,3 @@ export function ThemeToggle() {
     </button>
   );
 }
-
-

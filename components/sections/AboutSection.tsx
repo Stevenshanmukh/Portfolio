@@ -2,77 +2,123 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
-import { GraduationCap, MapPin, Download, Linkedin, Github, Mail } from "lucide-react";
-import Image from "next/image";
+import { useRef, useState } from "react";
+import { GraduationCap, Download, Linkedin, Github, Mail } from "lucide-react";
 import Link from "next/link";
-import { personalInfo, education, socialLinks } from "@/data/portfolio";
+import Image from "next/image";
+import { usePortfolio } from "@/lib/portfolio-context";
+
+/** Renders the profile photo if a valid URL exists, otherwise shows initials */
+function ProfileImage({ src, name }: { src: string; name: string }) {
+  const [failed, setFailed] = useState(false);
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2);
+
+  const hasImage = src && src.startsWith("http") && !failed;
+
+  if (hasImage) {
+    return (
+      <Image
+        src={src}
+        alt={name}
+        fill
+        className="object-cover"
+        sizes="(max-width: 640px) 208px, (max-width: 1024px) 240px, 256px"
+        onError={() => setFailed(true)}
+        priority
+      />
+    );
+  }
+
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500">
+      <span className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white">
+        {initials}
+      </span>
+    </div>
+  );
+}
 
 export function AboutSection() {
+  const { personalInfo, education, socialLinks } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section id="about" className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8" ref={ref}>
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12 sm:mb-16"
-        >
-          <p className="text-sm font-semibold text-blue-500 uppercase tracking-wide mb-2">
-            01. About Me
-          </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Steven Lagadapati
-          </h2>
-          <p className="text-lg sm:text-xl text-blue-500 font-semibold">
-            {personalInfo.tagline}
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Left: Image and Info */}
+    <section id="about" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8" ref={ref}>
+      <div className="max-w-5xl mx-auto">
+        {/* Profile Block: Avatar + Bio side by side */}
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-10 lg:gap-16">
+          {/* Left: Avatar — shrink-0 so it takes only the space it needs */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-6"
+            className="shrink-0"
           >
-            {/* Profile Image */}
-            <div className="relative w-full max-w-md mx-auto lg:mx-0">
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900 border border-neutral-200 dark:border-neutral-700">
-                {/* Placeholder */}
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center space-y-4 p-8">
-                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                      <span className="text-6xl font-bold text-white">SL</span>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                        Profile Photo
-                      </p>
-                      <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                        Add to: /public/images/profile.jpg
-                      </p>
-                    </div>
-                  </div>
-                </div>
+            <div className="relative w-52 h-52 sm:w-60 sm:h-60 lg:w-64 lg:h-64">
+              <div className="relative w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900 border-2 border-neutral-200 dark:border-neutral-700/50 shadow-2xl">
+                <ProfileImage
+                  src={personalInfo.image}
+                  name={personalInfo.name}
+                />
               </div>
 
               {/* Status Badge */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-lg p-3">
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-full px-4 py-1.5 shadow-lg">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-sm font-medium">{personalInfo.availability}</span>
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-xs font-medium whitespace-nowrap">{personalInfo.availability}</span>
                 </div>
               </div>
             </div>
+          </motion.div>
 
-            {/* Contact Buttons */}
-            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+          {/* Right: Content — flex-1 fills remaining space naturally */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex-1 text-center lg:text-left space-y-5"
+          >
+            {/* Name & Tagline */}
+            <div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
+                {personalInfo.name}
+              </h2>
+              <p className="text-lg sm:text-xl text-blue-500 font-semibold">
+                {personalInfo.tagline}
+              </p>
+            </div>
+
+            {/* Pull-quote headline */}
+            <h3 className="text-xl sm:text-2xl font-semibold text-neutral-700 dark:text-neutral-200 leading-snug">
+              Bridging the gap between raw data and actionable insights.
+            </h3>
+
+            {/* Bio */}
+            <div className="space-y-4 text-neutral-600 dark:text-neutral-400 leading-relaxed text-base sm:text-lg">
+              <p>
+                I am currently pursuing my Master&apos;s in Data Science at{" "}
+                <span className="text-blue-500 font-semibold">
+                  Florida Atlantic University
+                </span>
+                . My journey is defined by a curiosity for patterns and a drive
+                to solve complex problems through machine learning and
+                statistical analysis.
+              </p>
+              <p>
+                I thrive on turning complex datasets into clear, impactful
+                stories that drive decision-making. When I&apos;m not coding, I&apos;m
+                exploring the latest advancements in AI.
+              </p>
+            </div>
+
+            {/* CTA Buttons — naturally grouped with the bio text */}
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start pt-2">
               <Link
                 href={personalInfo.resume}
                 target="_blank"
@@ -106,100 +152,52 @@ export function AboutSection() {
               </Link>
             </div>
           </motion.div>
+        </div>
 
-          {/* Right: Text Content */}
+        {/* Education Card — Full-width below the profile block */}
+        {education.map((edu, index) => (
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-6"
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-16 lg:mt-20 p-6 sm:p-8 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 border border-blue-500/20 rounded-2xl"
           >
-            <div>
-              <h3 className="text-2xl font-bold mb-4">
-                Bridging the gap between raw data and actionable insights.
-              </h3>
-              <div className="space-y-4 text-neutral-600 dark:text-neutral-400">
-                <p>
-                  I am currently pursuing my Master&apos;s in Data Science at{" "}
-                  <span className="text-blue-500 font-semibold">
-                    Florida Atlantic University
+            <div className="flex items-start space-x-4 sm:space-x-6">
+              <div className="p-3 sm:p-4 bg-blue-500 rounded-xl shrink-0">
+                <GraduationCap className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                  <div>
+                    <h4 className="text-xl sm:text-2xl font-bold">{edu.institution}</h4>
+                    <p className="text-blue-500 font-medium text-base sm:text-lg">{edu.degree}</p>
+                  </div>
+                  <span className="px-3 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-semibold rounded-full whitespace-nowrap self-start">
+                    {edu.status}
                   </span>
-                  . My journey is defined by a curiosity for patterns and a drive
-                  to solve complex problems through machine learning and
-                  statistical analysis.
+                </div>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+                  {edu.period}
                 </p>
-                <p>
-                  I thrive on turning complex datasets into clear, impactful
-                  stories that drive decision-making. When I&apos;m not coding, I&apos;m
-                  exploring the latest advancements in AI.
+                <p className="text-neutral-600 dark:text-neutral-400 mb-5 leading-relaxed">
+                  {edu.description}
                 </p>
+                <div className="flex flex-wrap gap-2">
+                  {edu.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full text-sm font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
-
-            {/* Education Card */}
-            {education.map((edu, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="p-6 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 border border-blue-500/20 rounded-xl"
-              >
-                <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-blue-500 rounded-lg">
-                    <GraduationCap className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="text-xl font-bold">{edu.institution}</h4>
-                        <p className="text-blue-500 font-medium">{edu.degree}</p>
-                      </div>
-                      <span className="px-3 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-semibold rounded-full">
-                        {edu.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
-                      {edu.period}
-                    </p>
-                    <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                      {edu.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {edu.skills.map((skill, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 rounded-full text-sm"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* Technical Proficiency Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-2">
-                <div className="w-1 h-6 bg-blue-500 rounded-full" />
-                <h4 className="text-lg font-semibold">Technical Proficiency</h4>
-              </div>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                A comprehensive toolkit for Data Science, Machine Learning, and
-                Software Engineering.
-              </p>
-            </motion.div>
           </motion.div>
-        </div>
+        ))}
       </div>
     </section>
   );
 }
-

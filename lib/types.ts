@@ -30,7 +30,7 @@ export interface Project {
   title: string;
   description: string;
   longDescription: string;
-  category: "Machine Learning" | "Data Science" | "Web Dev" | "Research";
+  category: string;
   tags: string[];
   image: string;
   github: string | null;
@@ -51,5 +51,3 @@ export interface SiteMetadata {
   image: string;
   keywords: string[];
 }
-
-

@@ -1,10 +1,13 @@
 "use client";
 
+import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Github, Linkedin, Download, Sparkles } from "lucide-react";
+import { Github, Linkedin, Download, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { personalInfo, socialLinks } from "@/data/portfolio";
+import { useTheme } from "next-themes";
+import { usePortfolio } from "@/lib/portfolio-context";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { StarButton } from "@/components/ui/star-button";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,13 +33,34 @@ const itemVariants = {
   },
 };
 
+// Pre-compute particle positions so they are identical on server and client
+// (avoids hydration mismatch from calling Math.random() during render)
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9301 + 49297) * 233280;
+  return x - Math.floor(x);
+}
+
+const PARTICLES = Array.from({ length: 15 }, (_, i) => ({
+  left: seededRandom(i * 2) * 100,
+  top: seededRandom(i * 2 + 1) * 100,
+  duration: seededRandom(i * 3) * 3 + 2,
+  delay: seededRandom(i * 4) * 2,
+}));
+
 export function HeroSection() {
+  const { personalInfo, socialLinks } = usePortfolio();
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const { theme } = useTheme();
+  const [lightColor, setLightColor] = React.useState("#FAFAFA");
+
+  React.useEffect(() => {
+    setLightColor(theme === "dark" ? "#FAFAFA" : "#FF2056");
+  }, [theme]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 pb-16 overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 pb-8 overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Gradient Orbs */}
@@ -68,13 +92,13 @@ export function HeroSection() {
         />
 
         {/* Floating Particles */}
-        {[...Array(15)].map((_, i) => (
+        {PARTICLES.map((p, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-blue-500/30 rounded-full"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${p.left}%`,
+              top: `${p.top}%`,
             }}
             animate={{
               y: [0, -30, 0],
@@ -82,9 +106,9 @@ export function HeroSection() {
               scale: [0, 1, 0],
             }}
             transition={{
-              duration: Math.random() * 3 + 2,
+              duration: p.duration,
               repeat: Infinity,
-              delay: Math.random() * 2,
+              delay: p.delay,
               ease: "easeInOut",
             }}
           />
@@ -152,7 +176,7 @@ export function HeroSection() {
                   ease: "linear",
                 }}
               >
-                Steven.
+                {personalInfo.name.split(" ")[0]}.
               </motion.span>
             </motion.h1>
             <motion.h2
@@ -190,24 +214,13 @@ export function HeroSection() {
             className="flex flex-wrap justify-center gap-3 sm:gap-4 px-4"
           >
             <MagneticButton>
-              <Link
-                href="#projects"
-                className="group relative inline-flex items-center justify-center space-x-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-sm sm:text-base whitespace-nowrap overflow-hidden"
-              >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <span className="relative z-10">View Projects</span>
-                <motion.div
-                  className="relative z-10"
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+              <Link href="#projects">
+                <StarButton
+                  lightColor={lightColor}
+                  className="rounded-3xl px-6 py-3 h-auto text-sm sm:text-base cursor-pointer"
                 >
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </motion.div>
+                  View Projects
+                </StarButton>
               </Link>
             </MagneticButton>
 
@@ -255,35 +268,29 @@ export function HeroSection() {
             </MagneticButton>
           </motion.div>
 
-          {/* Scroll Indicator */}
+          {/* Scroll Indicator — minimalist line */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 1 }}
-            className="pt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2, duration: 1.2 }}
+            className="pt-6 flex justify-center"
           >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="flex flex-col items-center space-y-2 text-neutral-400"
-            >
-              <span className="text-xs uppercase tracking-widest">Scroll Down</span>
+            <div className="relative h-10 w-px">
+              <div className="absolute inset-0 bg-neutral-300/40 dark:bg-neutral-600/30 rounded-full" />
               <motion.div
-                className="w-6 h-10 border-2 border-neutral-300 dark:border-neutral-700 rounded-full p-1"
-                whileHover={{ borderColor: "rgb(59, 130, 246)" }}
-              >
-                <motion.div
-                  className="w-1.5 h-1.5 bg-blue-500 rounded-full mx-auto"
-                  animate={{ y: [0, 16, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </motion.div>
-            </motion.div>
+                className="absolute top-0 left-0 w-full rounded-full bg-blue-500/80"
+                animate={{ height: ["0%", "100%"], opacity: [1, 0] }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  repeatDelay: 0.4,
+                }}
+              />
+            </div>
           </motion.div>
         </div>
       </motion.div>
     </section>
   );
 }
-
-

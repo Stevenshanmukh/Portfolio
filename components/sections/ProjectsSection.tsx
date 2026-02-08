@@ -6,12 +6,45 @@ import { useRef, useState } from "react";
 import { ExternalLink, Github, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { projects } from "@/data/portfolio";
+import { usePortfolio } from "@/lib/portfolio-context";
 import type { Project } from "@/lib/types";
 
 const categories = ["All", "Machine Learning", "Data Science", "Web Dev", "Research"];
 
+/** Shows the project screenshot if a valid URL exists, otherwise a gradient placeholder */
+function ProjectImage({ src, title }: { src: string; title: string }) {
+  const [failed, setFailed] = useState(false);
+  const hasImage = src && src.startsWith("http") && !failed;
+
+  if (hasImage) {
+    return (
+      <Image
+        src={src}
+        alt={title}
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="text-center space-y-2 p-4">
+        <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+          <Github className="w-8 h-8 text-white" />
+        </div>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          {title}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function ProjectsSection() {
+  const { projects } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
   const [activeCategory, setActiveCategory] = useState("All");
@@ -31,9 +64,6 @@ export function ProjectsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <p className="text-sm font-semibold text-blue-500 uppercase tracking-wide mb-2">
-            Featured Work
-          </p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             Featured Projects
           </h2>
@@ -128,25 +158,11 @@ function ProjectCard({
       {/* Image with Zoom Effect */}
       <div className="relative w-full h-48 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 overflow-hidden">
         <motion.div
-          className="w-full h-full flex items-center justify-center"
+          className="w-full h-full"
           animate={{ scale: isHovered ? 1.1 : 1 }}
           transition={{ duration: 0.4 }}
         >
-          <div className="text-center space-y-2 p-4">
-            <motion.div
-              animate={{
-                rotate: isHovered ? 360 : 0,
-                scale: isHovered ? 1.1 : 1,
-              }}
-              transition={{ duration: 0.6 }}
-              className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center"
-            >
-              <Github className="w-8 h-8 text-white" />
-            </motion.div>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Project Image
-            </p>
-          </div>
+          <ProjectImage src={project.image} title={project.title} />
         </motion.div>
         {/* Gradient Overlay */}
         <motion.div
@@ -251,4 +267,3 @@ function ProjectCard({
     </motion.div>
   );
 }
-

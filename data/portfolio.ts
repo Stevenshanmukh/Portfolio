@@ -6,11 +6,11 @@ export const personalInfo = {
   tagline: "Data Scientist in Training",
   description:
     "I transform complex datasets into actionable insights. Specializing in machine learning, predictive modeling, and advanced data visualization to drive decision-making.",
-  email: "steven.email@example.com",
+  email: "stevenlagadapati1012@gmail.com",
   location: "Florida, USA",
   availability: "Open to new opportunities",
-  image: "/images/profile.jpg", // Update this path when you add your image
-  resume: "/resume.pdf", // Add your resume PDF to public folder
+  image: "/images/profile.jpg",
+  resume: "/resume.pdf",
 };
 
 export const education = [
@@ -149,7 +149,7 @@ export const projects: Project[] = [
 export const socialLinks = {
   linkedin: "https://linkedin.com/in/yourprofile",
   github: "https://github.com/yourusername",
-  email: "steven.email@example.com",
+  email: "stevenlagadapati1012@gmail.com",
 };
 
 export const siteMetadata = {
@@ -168,4 +168,3 @@ export const siteMetadata = {
     "Data Scientist",
   ],
 };
-
