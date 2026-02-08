@@ -177,6 +177,12 @@ function Toast({ message, type = "success" }: { message: string; type?: "success
 
 // ─── Image Upload Component ──────────────────────────────────────
 
+// File size limits (in bytes)
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const ALLOWED_PDF_TYPES = ["application/pdf"];
+
 function FileUpload({ label, currentUrl, storagePath, onUploaded, accept = "image/*" }: {
   label: string; currentUrl: string; storagePath: string;
   onUploaded: (url: string) => void; accept?: string;
@@ -184,13 +190,33 @@ function FileUpload({ label, currentUrl, storagePath, onUploaded, accept = "imag
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
+  const validateFile = (file: File): string | null => {
+    const isPdf = accept.includes("pdf");
+    const maxSize = isPdf ? MAX_PDF_SIZE : MAX_IMAGE_SIZE;
+    const allowedTypes = isPdf ? ALLOWED_PDF_TYPES : ALLOWED_IMAGE_TYPES;
+
+    if (file.size > maxSize) {
+      return `File too large. Maximum size is ${maxSize / 1024 / 1024}MB.`;
+    }
+    if (!allowedTypes.includes(file.type)) {
+      return `Invalid file type. Allowed: ${allowedTypes.join(", ")}`;
+    }
+    return null;
+  };
+
   const upload = async (file: File) => {
+    const error = validateFile(file);
+    if (error) {
+      alert(error);
+      return;
+    }
+
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
+      const ext = file.name.split(".").pop()?.toLowerCase();
       const path = `${storagePath}.${ext}`;
-      const { error } = await supabase.storage.from("portfolio").upload(path, file, { upsert: true });
-      if (error) throw error;
+      const { error: uploadError } = await supabase.storage.from("portfolio").upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
       const { data } = supabase.storage.from("portfolio").getPublicUrl(path);
       onUploaded(data.publicUrl);
     } catch (err: unknown) {
