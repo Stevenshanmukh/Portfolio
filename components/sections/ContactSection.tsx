@@ -24,7 +24,7 @@ export function ContactSection() {
       className="py-24 md:py-32 px-6 lg:px-8"
       ref={ref}
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl lg:max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -43,23 +43,23 @@ export function ContactSection() {
           </p>
 
           {/* Email card */}
-          <div className="p-8 border border-neutral-700/50 rounded-2xl text-center space-y-6 bg-white/[0.02]">
-            <p className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-white">
+          <div className="p-8 border border-neutral-700/50 rounded-2xl text-center space-y-6 bg-white/[0.02] overflow-hidden">
+            <p className="font-serif text-xl sm:text-2xl md:text-3xl font-medium tracking-tight text-white break-all sm:break-normal">
               {personalInfo.email}
             </p>
             <p className="text-sm text-neutral-500">
               Response time: Within 24 hours
             </p>
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href={`mailto:${personalInfo.email}`}
-                className="px-6 py-3 bg-white text-neutral-950 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
+                className="w-full sm:w-auto px-6 py-3 bg-white text-neutral-950 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
               >
                 Send Email
               </Link>
               <button
                 onClick={handleCopyEmail}
-                className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-600 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/5 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 border border-neutral-600 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/5 transition-colors"
               >
                 {copied ? (
                   <>

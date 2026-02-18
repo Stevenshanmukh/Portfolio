@@ -19,7 +19,7 @@ export function HeroSection() {
         <div className="space-y-8">
           {/* Name */}
           <motion.h1
-            className="font-serif text-5xl sm:text-6xl md:text-7xl font-semibold tracking-tight leading-[1.1] text-white"
+            className="font-serif text-4xl sm:text-5xl md:text-7xl font-semibold tracking-tight leading-[1.1] text-white"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -29,7 +29,7 @@ export function HeroSection() {
 
           {/* Role */}
           <motion.p
-            className="text-xl sm:text-2xl text-neutral-400 font-light"
+            className="text-lg sm:text-xl md:text-2xl text-neutral-400 font-light"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -39,7 +39,7 @@ export function HeroSection() {
 
           {/* Description */}
           <motion.p
-            className="text-base sm:text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed"
+            className="text-sm sm:text-base md:text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}

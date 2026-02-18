@@ -26,7 +26,7 @@ export function SkillsSection() {
       className="py-24 md:py-32 px-6 lg:px-8"
       ref={ref}
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -45,7 +45,7 @@ export function SkillsSection() {
           </p>
 
           {/* Skills grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-12">
             {skillCategories.map(([category, data]) => (
               <div key={category} className="p-6 border border-neutral-700/50 rounded-2xl hover:border-neutral-600 transition-colors space-y-4 bg-white/[0.02]">
                 <div>

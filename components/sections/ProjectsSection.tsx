@@ -63,7 +63,7 @@ export function ProjectsSection() {
 
   return (
     <section id="projects" className="py-24 md:py-32 px-6 lg:px-8" ref={ref}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -87,11 +87,10 @@ export function ProjectsSection() {
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeCategory === category
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeCategory === category
                     ? "bg-white text-neutral-950"
                     : "text-neutral-500 hover:text-neutral-50"
-                }`}
+                  }`}
               >
                 {category}
               </button>
@@ -99,7 +98,7 @@ export function ProjectsSection() {
           </div>
 
           {/* Projects grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-12">
             {filteredProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}

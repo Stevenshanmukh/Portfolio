@@ -32,7 +32,7 @@ export function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-5xl mx-auto px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link
             href="/"
@@ -56,7 +56,7 @@ export function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-neutral-400 hover:text-neutral-50 transition-colors"
+              className="p-2 text-neutral-400 hover:text-neutral-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -84,7 +84,7 @@ export function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2.5 text-sm text-neutral-400 hover:text-neutral-50 transition-colors"
+                  className="block py-3 text-sm text-neutral-400 hover:text-neutral-50 transition-colors min-h-[44px] flex items-center"
                 >
                   {item.label}
                 </Link>

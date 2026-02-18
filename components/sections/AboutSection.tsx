@@ -47,17 +47,17 @@ export function AboutSection() {
 
   return (
     <section id="about" className="pt-12 md:pt-16 pb-24 md:pb-32 px-6 lg:px-8" ref={ref}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         >
           {/* Profile block */}
-          <div className="flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
             {/* Avatar */}
             <div className="shrink-0">
-              <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden border border-neutral-700">
+              <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden border border-neutral-700">
                 <ProfileImage
                   src={personalInfo.image}
                   name={personalInfo.name}
