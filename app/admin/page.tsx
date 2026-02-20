@@ -424,9 +424,13 @@ function SkillsEditor({ data, onChange }: {
   );
 }
 
-function ProjectsEditor({ data, onChange }: {
-  data: FormData["projects"]; onChange: (d: FormData["projects"]) => void;
-}) {
+interface ProjectEditorProps {
+  data: FormData["projects"];
+  onChange: (d: FormData["projects"]) => void;
+  suggestions: string[];
+}
+
+function ProjectEditor({ data, onChange, suggestions }: ProjectEditorProps) {
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const addProject = () => {
     const newProj = {
@@ -465,7 +469,13 @@ function ProjectsEditor({ data, onChange }: {
               <div className="mt-2 p-4 bg-neutral-800/30 border border-neutral-700 rounded-lg space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input label="Title" value={project.title} onChange={(v) => updateProject(idx, "title", v)} />
-                  <TagInput label="Categories" tags={project.categories || []} onChange={(tags) => updateProject(idx, "categories", tags)} placeholder="Add category" />
+                  <TagInput
+                    label="Categories"
+                    tags={project.categories || []}
+                    onChange={(tags) => updateProject(idx, "categories", tags)}
+                    placeholder="Add category"
+                    suggestions={suggestions}
+                  />
                 </div>
                 <TextArea label="Short Description" value={project.description} onChange={(v) => updateProject(idx, "description", v)} rows={2} />
                 <TagInput label="Tech Stack / Tags" tags={project.tags} onChange={(tags) => updateProject(idx, "tags", tags)} placeholder="Add a tag" />
@@ -516,7 +526,7 @@ export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>("personal");
-  const [data, setData] = useState<FormData | null>(null);
+  const [formData, setFormData] = useState<FormData | null>(null); // Renamed from 'data'
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "info" | "error" } | null>(null);
@@ -556,7 +566,7 @@ export default function AdminPage() {
         supabase.from("site_metadata").select("*").single(),
       ]);
 
-      setData({
+      setFormData({ // Renamed from 'setData'
         personalInfo: {
           name: pi.data?.name || "",
           role: pi.data?.role || "",
@@ -622,53 +632,53 @@ export default function AdminPage() {
 
   // ── Save everything to Supabase ──────────────────────────
   async function saveData() {
-    if (!data) return;
+    if (!formData) return; // Renamed from 'data'
     setSaving(true);
 
     try {
       // 1. Upsert single-row tables
       const { error: piErr } = await supabase.from("personal_info").upsert({
         id: 1,
-        name: data.personalInfo.name,
-        role: data.personalInfo.role,
-        tagline: data.personalInfo.tagline,
-        description: data.personalInfo.description,
-        about_description: data.personalInfo.aboutDescription,
-        email: data.personalInfo.email,
-        location: data.personalInfo.location,
-        availability: data.personalInfo.availability,
-        image_url: data.personalInfo.image_url || null,
-        resume_url: data.personalInfo.resume_url || null,
+        name: formData.personalInfo.name, // Renamed from 'data'
+        role: formData.personalInfo.role, // Renamed from 'data'
+        tagline: formData.personalInfo.tagline, // Renamed from 'data'
+        description: formData.personalInfo.description, // Renamed from 'data'
+        about_description: formData.personalInfo.aboutDescription, // Renamed from 'data'
+        email: formData.personalInfo.email, // Renamed from 'data'
+        location: formData.personalInfo.location, // Renamed from 'data'
+        availability: formData.personalInfo.availability, // Renamed from 'data'
+        image_url: formData.personalInfo.image_url || null, // Renamed from 'data'
+        resume_url: formData.personalInfo.resume_url || null, // Renamed from 'data'
         updated_at: new Date().toISOString(),
       });
       if (piErr) throw piErr;
 
       const { error: slErr } = await supabase.from("social_links").upsert({
         id: 1,
-        linkedin: data.socialLinks.linkedin || null,
-        github: data.socialLinks.github || null,
-        email: data.socialLinks.email || null,
+        linkedin: formData.socialLinks.linkedin || null, // Renamed from 'data'
+        github: formData.socialLinks.github || null, // Renamed from 'data'
+        email: formData.socialLinks.email || null, // Renamed from 'data'
         updated_at: new Date().toISOString(),
       });
       if (slErr) throw slErr;
 
       const { error: smErr } = await supabase.from("site_metadata").upsert({
         id: 1,
-        title: data.siteMetadata.title,
-        description: data.siteMetadata.description,
-        url: data.siteMetadata.url,
-        image: data.siteMetadata.image || null,
-        keywords: data.siteMetadata.keywords,
-        project_categories: data.siteMetadata.projectCategories,
+        title: formData.siteMetadata.title, // Renamed from 'data'
+        description: formData.siteMetadata.description, // Renamed from 'data'
+        url: formData.siteMetadata.url, // Renamed from 'data'
+        image: formData.siteMetadata.image || null, // Renamed from 'data'
+        keywords: formData.siteMetadata.keywords, // Renamed from 'data'
+        project_categories: formData.siteMetadata.projectCategories, // Renamed from 'data'
         updated_at: new Date().toISOString(),
       });
       if (smErr) throw smErr;
 
       // 2. Multi-row tables: delete all → re-insert
       await supabase.from("education").delete().gte("id", 0);
-      if (data.education.length > 0) {
+      if (formData.education.length > 0) { // Renamed from 'data'
         const { error: eduErr } = await supabase.from("education").insert(
-          data.education.map((e, i) => ({
+          formData.education.map((e, i) => ({ // Renamed from 'data'
             institution: e.institution,
             degree: e.degree,
             period: e.period,
@@ -683,9 +693,9 @@ export default function AdminPage() {
       }
 
       await supabase.from("skill_categories").delete().gte("id", 0);
-      if (data.skillCategories.length > 0) {
+      if (formData.skillCategories.length > 0) { // Renamed from 'data'
         const { error: skErr } = await supabase.from("skill_categories").insert(
-          data.skillCategories.map((s, i) => ({
+          formData.skillCategories.map((s, i) => ({ // Renamed from 'data'
             name: s.name,
             icon: s.icon,
             description: s.description,
@@ -698,9 +708,9 @@ export default function AdminPage() {
       }
 
       await supabase.from("projects").delete().gte("id", 0);
-      if (data.projects.length > 0) {
+      if (formData.projects.length > 0) { // Renamed from 'data'
         const { error: prErr } = await supabase.from("projects").insert(
-          data.projects.map((p, i) => ({
+          formData.projects.map((p, i) => ({ // Renamed from 'data'
             title: p.title,
             description: p.description,
             // long_description removed/deprecated
@@ -740,7 +750,7 @@ export default function AdminPage() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setSession(null);
-    setData(null);
+    setFormData(null); // Renamed from 'setData'
   };
 
   // ── Render states ────────────────────────────────────────
@@ -756,7 +766,7 @@ export default function AdminPage() {
     return <AuthForm onAuth={(s) => setSession(s)} />;
   }
 
-  if (loading || !data) {
+  if (loading || !formData) { // Renamed from 'data'
     return (
       <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-8 h-8 text-neutral-400 animate-spin" />
@@ -827,12 +837,12 @@ export default function AdminPage() {
 
         {/* Main Content */}
         <main className="flex-1 min-h-[calc(100vh-3.5rem)] p-4 lg:p-8 max-w-4xl mx-auto w-full">
-          {activeTab === "personal" && <PersonalInfoEditor data={data.personalInfo} onChange={(d) => setData({ ...data, personalInfo: d })} />}
-          {activeTab === "social" && <SocialLinksEditor data={data.socialLinks} onChange={(d) => setData({ ...data, socialLinks: d })} />}
-          {activeTab === "education" && <EducationEditor data={data.education} onChange={(d) => setData({ ...data, education: d })} />}
-          {activeTab === "skills" && <SkillsEditor data={data.skillCategories} onChange={(d) => setData({ ...data, skillCategories: d })} />}
-          {activeTab === "projects" && <ProjectsEditor data={data.projects} onChange={(d) => setData({ ...data, projects: d })} />}
-          {activeTab === "metadata" && <MetadataEditor data={data.siteMetadata} onChange={(d) => setData({ ...data, siteMetadata: d })} />}
+          {activeTab === "personal" && <PersonalInfoEditor data={formData.personalInfo} onChange={(d) => setFormData({ ...formData, personalInfo: d })} />}
+          {activeTab === "social" && <SocialLinksEditor data={formData.socialLinks} onChange={(d) => setFormData({ ...formData, socialLinks: d })} />}
+          {activeTab === "education" && <EducationEditor data={formData.education} onChange={(d) => setFormData({ ...formData, education: d })} />}
+          {activeTab === "skills" && <SkillsEditor data={formData.skillCategories} onChange={(d) => setFormData({ ...formData, skillCategories: d })} />}
+          {activeTab === "projects" && <ProjectEditor data={formData.projects} onChange={(d) => setFormData({ ...formData, projects: d })} suggestions={formData.siteMetadata.projectCategories} />}
+          {activeTab === "metadata" && <MetadataEditor data={formData.siteMetadata} onChange={(d) => setFormData({ ...formData, siteMetadata: d })} />}
         </main>
       </div>
 
