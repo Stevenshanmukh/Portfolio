@@ -77,7 +77,7 @@ export function AboutSection() {
               </div>
 
               <p className="text-neutral-400 leading-relaxed">
-                {personalInfo.description}
+                {personalInfo.aboutDescription || personalInfo.description}
               </p>
 
               {/* CTAs */}

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+import { TagInput } from "@/components/ui/TagInput";
 import type {
   DbEducation,
   DbSkillCategory,
@@ -43,14 +44,14 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-const ICON_OPTIONS = ["Code", "Brain", "Database", "BarChart3", "Wrench"];
-const CATEGORY_OPTIONS = ["Machine Learning", "Data Science", "Web Dev", "Research"];
+const ICON_OPTIONS = ["Code", "Brain", "Database", "BarChart3", "Wrench", "Cloud", "Cpu"];
+// CATEGORY_OPTIONS removed - now dynamic
 
 // ─── Form State Types ─────────────────────────────────────────────
 
 interface FormData {
   personalInfo: {
-    name: string; role: string; tagline: string; description: string;
+    name: string; role: string; tagline: string; description: string; aboutDescription: string;
     email: string; location: string; availability: string;
     image_url: string; resume_url: string;
   };
@@ -64,12 +65,12 @@ interface FormData {
     items: string[]; sort_order: number;
   }[];
   projects: {
-    id?: number; title: string; description: string; long_description: string;
-    category: string; tags: string[]; image_url: string;
+    id?: number; title: string; description: string;
+    categories: string[]; tags: string[]; image_url: string;
     github_url: string; demo_url: string; featured: boolean; sort_order: number;
   }[];
   siteMetadata: {
-    title: string; description: string; url: string; image: string; keywords: string[];
+    title: string; description: string; url: string; image: string; keywords: string[]; projectCategories: string[];
   };
 }
 
@@ -117,38 +118,7 @@ function Select({ label, value, onChange, options }: {
   );
 }
 
-function TagsInput({ label, tags, onChange, placeholder = "Type and press Enter" }: {
-  label: string; tags: string[]; onChange: (tags: string[]) => void; placeholder?: string;
-}) {
-  const [input, setInput] = useState("");
-  const addTag = () => {
-    const trimmed = input.trim();
-    if (trimmed && !tags.includes(trimmed)) onChange([...tags, trimmed]);
-    setInput("");
-  };
-  return (
-    <div>
-      <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {tags.map((tag, i) => (
-          <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/10 text-neutral-200 text-sm rounded-md">
-            {tag}
-            <button onClick={() => onChange(tags.filter((_, idx) => idx !== i))} className="hover:text-red-400 transition-colors">×</button>
-          </span>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <input value={input} onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
-          placeholder={placeholder}
-          className="flex-1 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition-colors" />
-        <button onClick={addTag} className="px-3 py-2 bg-white/10 text-neutral-300 rounded-lg hover:bg-white/15 transition-colors">
-          <Plus className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  );
-}
+// function TagsInput removed - imported from components/ui/TagInput
 
 function SectionCard({ title, description, children }: {
   title: string; description?: string; children: React.ReactNode;
@@ -166,9 +136,8 @@ function SectionCard({ title, description, children }: {
 
 function Toast({ message, type = "success" }: { message: string; type?: "success" | "info" | "error" }) {
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-xl text-sm font-medium ${
-      type === "success" ? "bg-green-500/90 text-white" : type === "error" ? "bg-red-500/90 text-white" : "bg-neutral-700 text-white"
-    }`}>
+    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-xl text-sm font-medium ${type === "success" ? "bg-green-500/90 text-white" : type === "error" ? "bg-red-500/90 text-white" : "bg-neutral-700 text-white"
+      }`}>
       {type === "success" ? <Check className="w-4 h-4" /> : type === "error" ? <AlertCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
       {message}
     </div>
@@ -238,9 +207,8 @@ function FileUpload({ label, currentUrl, storagePath, onUploaded, accept = "imag
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-          dragOver ? "border-neutral-500 bg-white/5" : "border-neutral-700 hover:border-neutral-600"
-        }`}
+        className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-colors ${dragOver ? "border-neutral-500 bg-white/5" : "border-neutral-700 hover:border-neutral-600"
+          }`}
       >
         {currentUrl && accept.startsWith("image") ? (
           <div className="mb-3">
@@ -357,7 +325,8 @@ function PersonalInfoEditor({ data, onChange }: {
         <Input label="Location" value={data.location} onChange={(v) => set("location", v)} />
         <Input label="Availability" value={data.availability} onChange={(v) => set("availability", v)} />
       </div>
-      <TextArea label="Bio / Description" value={data.description} onChange={(v) => set("description", v)} rows={3} />
+      <TextArea label="Landing Page Description" value={data.description} onChange={(v) => set("description", v)} rows={3} />
+      <TextArea label="About / Profile Description" value={data.aboutDescription} onChange={(v) => set("aboutDescription", v)} rows={3} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FileUpload label="Profile Picture" currentUrl={data.image_url} storagePath="images/profile/avatar"
           onUploaded={(url) => set("image_url", url)} />
@@ -403,7 +372,7 @@ function EducationEditor({ data, onChange }: {
             <Input label="Status" value={edu.status} onChange={(v) => updateEntry(idx, "status", v)} placeholder="Graduated / In Progress" />
           </div>
           <TextArea label="Description" value={edu.description} onChange={(v) => updateEntry(idx, "description", v)} rows={2} />
-          <TagsInput label="Skills / Coursework" tags={edu.skills} onChange={(tags) => updateEntry(idx, "skills", tags)} placeholder="Add a skill" />
+          <TagInput label="Skills / Coursework" tags={edu.skills} onChange={(tags) => updateEntry(idx, "skills", tags)} placeholder="Add a skill" />
         </div>
       ))}
       <button onClick={addEntry} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-neutral-500 text-neutral-400 hover:text-neutral-200 rounded-lg flex items-center justify-center gap-2 transition-colors">
@@ -439,7 +408,7 @@ function SkillsEditor({ data, onChange }: {
             <Select label="Icon" value={cat.icon} onChange={(v) => updateCategory(idx, "icon", v)} options={ICON_OPTIONS} />
             <Input label="Description" value={cat.description} onChange={(v) => updateCategory(idx, "description", v)} />
           </div>
-          <TagsInput label="Skills" tags={cat.items} onChange={(items) => updateCategory(idx, "items", items)} placeholder="Add a skill" />
+          <TagInput label="Skills" tags={cat.items} onChange={(items) => updateCategory(idx, "items", items)} placeholder="Add a skill" />
         </div>
       ))}
       <div className="flex gap-2">
@@ -461,8 +430,8 @@ function ProjectsEditor({ data, onChange }: {
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const addProject = () => {
     const newProj = {
-      title: "New Project", description: "", long_description: "", category: "Machine Learning",
-      tags: [], image_url: "", github_url: "", demo_url: "", featured: false, sort_order: data.length,
+      title: "New Project", description: "",
+      categories: [], tags: [], image_url: "", github_url: "", demo_url: "", featured: false, sort_order: data.length,
     };
     onChange([...data, newProj]);
     setEditingIdx(data.length);
@@ -479,14 +448,13 @@ function ProjectsEditor({ data, onChange }: {
         {data.map((project, idx) => (
           <div key={idx}>
             <div onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
-              className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-                editingIdx === idx ? "bg-white/5 border border-neutral-600" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"
-              }`}>
+              className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${editingIdx === idx ? "bg-white/5 border border-neutral-600" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"
+                }`}>
               <div className="flex items-center gap-3 min-w-0">
                 <ChevronRight className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${editingIdx === idx ? "rotate-90" : ""}`} />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-white truncate">{project.title}</p>
-                  <p className="text-xs text-neutral-400">{project.category}{project.featured && " · ⭐ Featured"}</p>
+                  <p className="text-xs text-neutral-400">{project.categories?.join(", ") || "No Category"}{project.featured && " · ⭐ Featured"}</p>
                 </div>
               </div>
               <button onClick={(e) => { e.stopPropagation(); removeProject(idx); }}
@@ -497,11 +465,10 @@ function ProjectsEditor({ data, onChange }: {
               <div className="mt-2 p-4 bg-neutral-800/30 border border-neutral-700 rounded-lg space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input label="Title" value={project.title} onChange={(v) => updateProject(idx, "title", v)} />
-                  <Select label="Category" value={project.category} onChange={(v) => updateProject(idx, "category", v)} options={CATEGORY_OPTIONS} />
+                  <TagInput label="Categories" tags={project.categories || []} onChange={(tags) => updateProject(idx, "categories", tags)} placeholder="Add category" />
                 </div>
                 <TextArea label="Short Description" value={project.description} onChange={(v) => updateProject(idx, "description", v)} rows={2} />
-                <TextArea label="Long Description" value={project.long_description} onChange={(v) => updateProject(idx, "long_description", v)} rows={3} />
-                <TagsInput label="Tech Stack / Tags" tags={project.tags} onChange={(tags) => updateProject(idx, "tags", tags)} placeholder="Add a tag" />
+                <TagInput label="Tech Stack / Tags" tags={project.tags} onChange={(tags) => updateProject(idx, "tags", tags)} placeholder="Add a tag" />
                 <FileUpload label="Project Screenshot" currentUrl={project.image_url}
                   storagePath={`images/projects/project-${idx}`}
                   onUploaded={(url) => updateProject(idx, "image_url", url)} />
@@ -537,7 +504,8 @@ function MetadataEditor({ data, onChange }: {
         <Input label="Site URL" value={data.url} onChange={(v) => set("url", v)} placeholder="https://yourportfolio.vercel.app" />
         <Input label="OG Image Path" value={data.image} onChange={(v) => set("image", v)} />
       </div>
-      <TagsInput label="SEO Keywords" tags={data.keywords} onChange={(kw) => set("keywords", kw)} placeholder="Add a keyword" />
+      <TagInput label="Project Categories" tags={data.projectCategories} onChange={(cats) => set("projectCategories", cats)} placeholder="Add category (e.g. Machine Learning)" />
+      <TagInput label="SEO Keywords" tags={data.keywords} onChange={(kw) => set("keywords", kw)} placeholder="Add a keyword" />
     </SectionCard>
   );
 }
@@ -594,6 +562,7 @@ export default function AdminPage() {
           role: pi.data?.role || "",
           tagline: pi.data?.tagline || "",
           description: pi.data?.description || "",
+          aboutDescription: pi.data?.about_description || "",
           email: pi.data?.email || "",
           location: pi.data?.location || "",
           availability: pi.data?.availability || "",
@@ -628,7 +597,7 @@ export default function AdminPage() {
           title: p.title,
           description: p.description,
           long_description: p.long_description || "",
-          category: p.category,
+          categories: p.categories || [p.category].filter(Boolean) || [],
           tags: p.tags || [],
           image_url: p.image_url || "",
           github_url: p.github_url || "",
@@ -642,6 +611,7 @@ export default function AdminPage() {
           url: meta.data?.url || "",
           image: meta.data?.image || "",
           keywords: meta.data?.keywords || [],
+          projectCategories: meta.data?.project_categories || [],
         },
       });
     } catch {
@@ -663,6 +633,7 @@ export default function AdminPage() {
         role: data.personalInfo.role,
         tagline: data.personalInfo.tagline,
         description: data.personalInfo.description,
+        about_description: data.personalInfo.aboutDescription,
         email: data.personalInfo.email,
         location: data.personalInfo.location,
         availability: data.personalInfo.availability,
@@ -688,6 +659,7 @@ export default function AdminPage() {
         url: data.siteMetadata.url,
         image: data.siteMetadata.image || null,
         keywords: data.siteMetadata.keywords,
+        project_categories: data.siteMetadata.projectCategories,
         updated_at: new Date().toISOString(),
       });
       if (smErr) throw smErr;
@@ -731,8 +703,9 @@ export default function AdminPage() {
           data.projects.map((p, i) => ({
             title: p.title,
             description: p.description,
-            long_description: p.long_description || null,
-            category: p.category,
+            // long_description removed/deprecated
+            categories: p.categories,
+            category: p.categories?.[0] || "Uncategorized", // Fallback for backward compatibility
             tags: p.tags,
             image_url: p.image_url || null,
             github_url: p.github_url || null,
@@ -828,17 +801,15 @@ export default function AdminPage() {
 
       <div className="flex pt-14">
         {/* Sidebar */}
-        <aside className={`fixed lg:sticky top-14 left-0 z-30 h-[calc(100vh-3.5rem)] w-56 bg-neutral-900 border-r border-neutral-800 flex flex-col transition-transform duration-200 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}>
+        <aside className={`fixed lg:sticky top-14 left-0 z-30 h-[calc(100vh-3.5rem)] w-56 bg-neutral-900 border-r border-neutral-800 flex flex-col transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }`}>
           <nav className="flex-1 py-4 space-y-1 px-3">
             {TABS.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === tab.id ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white hover:bg-neutral-800"
-                  }`}>
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === tab.id ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                    }`}>
                   <Icon className="w-4 h-4 shrink-0" />
                   {tab.label}
                 </button>

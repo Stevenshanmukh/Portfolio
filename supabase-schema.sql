@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS personal_info (
   role TEXT NOT NULL,
   tagline TEXT NOT NULL,
   description TEXT NOT NULL,
+  about_description TEXT NOT NULL DEFAULT '',
   email TEXT NOT NULL,
   location TEXT NOT NULL,
   availability TEXT NOT NULL,
@@ -142,12 +143,13 @@ CREATE POLICY "auth_delete_portfolio_storage" ON storage.objects
 
 -- ─── 4. SEED DATA ───────────────────────────────────────
 
-INSERT INTO personal_info (name, role, tagline, description, email, location, availability)
+INSERT INTO personal_info (name, role, tagline, description, about_description, email, location, availability)
 VALUES (
   'Steven Lagadapati',
   'Data Science Master',
   'Data Scientist in Training',
   'I transform complex datasets into actionable insights. Specializing in machine learning, predictive modeling, and advanced data visualization to drive decision-making.',
+  'I am a passionate Data Scientist with a strong foundation in machine learning and statistical analysis. My journey involves...',
   'stevenlagadapati1012@gmail.com',
   'Florida, USA',
   'Open to new opportunities'

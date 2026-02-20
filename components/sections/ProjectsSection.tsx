@@ -8,7 +8,7 @@ import Image from "next/image";
 import { usePortfolio } from "@/lib/portfolio-context";
 import type { Project } from "@/lib/types";
 
-const categories = [
+const FALLBACK_CATEGORIES = [
   "All",
   "Machine Learning",
   "Data Science",
@@ -51,15 +51,29 @@ function ProjectThumbnail({ src, title }: { src: string; title: string }) {
 }
 
 export function ProjectsSection() {
-  const { projects } = usePortfolio();
+  const { projects, siteMetadata } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
   const [activeCategory, setActiveCategory] = useState("All");
 
+  // Use dynamic categories from metadata if available, otherwise fallback
+  const categories = ["All", ...(siteMetadata?.projectCategories || [])];
+  if (categories.length === 1) {
+    const fallback = ["Machine Learning", "Data Science", "Web Dev", "Research"];
+    categories.push(...fallback);
+  }
+
   const filteredProjects =
     activeCategory === "All"
       ? projects
-      : projects.filter((project) => project.category === activeCategory);
+      : projects.filter((project) => {
+        // Check if the project has the category in its list
+        if (project.categories && project.categories.length > 0) {
+          return project.categories.includes(activeCategory);
+        }
+        // Fallback to old single category check
+        return project.category === activeCategory;
+      });
 
   return (
     <section id="projects" className="py-24 md:py-32 px-6 lg:px-8" ref={ref}>
@@ -88,8 +102,8 @@ export function ProjectsSection() {
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeCategory === category
-                    ? "bg-white text-neutral-950"
-                    : "text-neutral-500 hover:text-neutral-50"
+                  ? "bg-white text-neutral-950"
+                  : "text-neutral-500 hover:text-neutral-50"
                   }`}
               >
                 {category}
@@ -127,9 +141,13 @@ function ProjectCard({ project }: { project: Project }) {
               </span>
             )}
           </div>
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mt-0.5">
-            {project.category}
-          </p>
+          <div className="flex flex-wrap gap-1 mt-1">
+            {(project.categories || [project.category]).map((cat, i) => (
+              <span key={i} className="text-xs uppercase tracking-widest text-neutral-500">
+                {cat}{i < (project.categories?.length || 1) - 1 ? " • " : ""}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -138,23 +156,12 @@ function ProjectCard({ project }: { project: Project }) {
         {project.description}
       </p>
 
-      {/* Long Description (expandable) */}
-      {hasLongDescription && (
-        <div>
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-50 transition-colors"
-          >
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-            <span>{expanded ? "Show less" : "Read more"}</span>
-          </button>
-          {expanded && (
-            <p className="text-sm text-neutral-400 leading-relaxed mt-3">
-              {project.longDescription}
-            </p>
-          )}
-        </div>
-      )}
+      {/* Description */}
+      <p className="text-sm text-neutral-400 leading-relaxed">
+        {project.description}
+      </p>
+
+      {/* Long Description removed as per request */}
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2">

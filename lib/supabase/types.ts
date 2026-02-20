@@ -6,6 +6,7 @@ export interface DbPersonalInfo {
   role: string;
   tagline: string;
   description: string;
+  about_description: string;
   email: string;
   location: string;
   availability: string;
@@ -40,8 +41,11 @@ export interface DbProject {
   id: number;
   title: string;
   description: string;
+  /** @deprecated unused */
   long_description: string | null;
+  /** @deprecated use categories array instead */
   category: string;
+  categories: string[];
   tags: string[];
   image_url: string | null;
   github_url: string | null;
@@ -66,5 +70,6 @@ export interface DbSiteMetadata {
   url: string;
   image: string | null;
   keywords: string[];
+  project_categories: string[];
   updated_at: string;
 }

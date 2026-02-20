@@ -8,8 +8,11 @@ export interface Project {
   id: number;
   title: string;
   description: string;
-  longDescription: string;
-  category: string;
+  /** @deprecated unused */
+  longDescription?: string;
+  categories: string[];
+  /** @deprecated use categories */
+  category?: string;
   tags: string[];
   image: string;
   github: string | null;

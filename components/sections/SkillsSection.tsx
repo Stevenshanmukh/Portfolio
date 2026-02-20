@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
-import { Code, Brain, Database, BarChart3, Wrench, type LucideIcon } from "lucide-react";
+import { Code, Brain, Database, BarChart3, Wrench, Cloud, Cpu, type LucideIcon } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -11,6 +11,8 @@ const iconMap: Record<string, LucideIcon> = {
   Database,
   BarChart3,
   Wrench,
+  Cloud,
+  Cpu,
 };
 
 export function SkillsSection() {

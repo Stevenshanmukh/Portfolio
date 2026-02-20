@@ -8,17 +8,7 @@ import type {
   DbSiteMetadata,
 } from "./types";
 
-// Fallback data used when Supabase is unreachable or tables are empty
-import {
-  personalInfo as fallbackPersonalInfo,
-  education as fallbackEducation,
-  skills as fallbackSkills,
-  projects as fallbackProjects,
-  socialLinks as fallbackSocialLinks,
-  siteMetadata as fallbackSiteMetadata,
-} from "@/data/portfolio";
-
-// ─── Types matching the frontend context shape ──────────────────
+import type { Project } from "@/lib/types";
 
 export interface PortfolioPageData {
   personalInfo: {
@@ -26,13 +16,20 @@ export interface PortfolioPageData {
     role: string;
     tagline: string;
     description: string;
+    aboutDescription: string;
     email: string;
     location: string;
     availability: string;
     image: string;
     resume: string;
   };
+  socialLinks: {
+    linkedin: string;
+    github: string;
+    email: string;
+  };
   education: {
+    id: number;
     institution: string;
     degree: string;
     period: string;
@@ -40,34 +37,26 @@ export interface PortfolioPageData {
     description: string;
     skills: string[];
   }[];
-  skills: Record<string, { icon: string; description: string; items: string[] }>;
-  projects: {
-    id: number;
-    title: string;
-    description: string;
-    longDescription: string;
-    category: string;
-    tags: string[];
-    image: string;
-    github: string | null;
-    demo: string | null;
-    featured: boolean;
-  }[];
-  socialLinks: {
-    linkedin: string;
-    github: string;
-    email: string;
-  };
+  skills: Record<
+    string,
+    {
+      icon: string;
+      description: string;
+      items: string[];
+    }
+  >;
+  projects: Project[];
   siteMetadata: {
     title: string;
     description: string;
     url: string;
     image: string;
     keywords: string[];
+    projectCategories: string[];
   };
 }
 
-// ─── Mappers (DB rows → frontend shape) ──────────────────────────
+// ─── Mappers ─────────────────────────────────────────────────────────
 
 function mapPersonalInfo(row: DbPersonalInfo) {
   return {
@@ -75,6 +64,7 @@ function mapPersonalInfo(row: DbPersonalInfo) {
     role: row.role,
     tagline: row.tagline,
     description: row.description,
+    aboutDescription: row.about_description,
     email: row.email,
     location: row.location,
     availability: row.availability,
@@ -85,6 +75,7 @@ function mapPersonalInfo(row: DbPersonalInfo) {
 
 function mapEducation(rows: DbEducation[]) {
   return rows.map((row) => ({
+    id: row.id,
     institution: row.institution,
     degree: row.degree,
     period: row.period,
@@ -95,38 +86,31 @@ function mapEducation(rows: DbEducation[]) {
 }
 
 function mapSkills(rows: DbSkillCategory[]) {
-  const result: Record<string, { icon: string; description: string; items: string[] }> = {};
-  for (const row of rows) {
-    result[row.name] = {
+  const skills: PortfolioPageData["skills"] = {};
+  rows.forEach((row) => {
+    skills[row.name] = {
       icon: row.icon,
       description: row.description,
       items: row.items || [],
     };
-  }
-  return result;
+  });
+  return skills;
 }
 
-function mapProjects(rows: DbProject[]) {
+function mapProjects(rows: DbProject[]): Project[] {
   return rows.map((row) => ({
     id: row.id,
     title: row.title,
     description: row.description,
-    longDescription: row.long_description || "",
+    // longDescription removed/deprecated
     category: row.category,
+    categories: row.categories || (row.category ? [row.category] : []),
     tags: row.tags || [],
     image: row.image_url || "/images/projects/placeholder.jpg",
     github: row.github_url,
     demo: row.demo_url,
     featured: row.featured,
   }));
-}
-
-function mapSocialLinks(row: DbSocialLinks) {
-  return {
-    linkedin: row.linkedin || "",
-    github: row.github || "",
-    email: row.email || "",
-  };
 }
 
 function mapSiteMetadata(row: DbSiteMetadata) {
@@ -136,23 +120,17 @@ function mapSiteMetadata(row: DbSiteMetadata) {
     url: row.url,
     image: row.image || "/images/og-image.jpg",
     keywords: row.keywords || [],
+    projectCategories: row.project_categories || [],
   };
 }
 
-// ─── Main query: fetch everything ────────────────────────────────
+// ─── Fetcher ─────────────────────────────────────────────────────────
 
 export async function fetchAllPortfolioData(): Promise<PortfolioPageData> {
   try {
-    const supabase = createServerSupabase();
+    const supabase = await createServerSupabase();
 
-    const [
-      { data: personalInfoRow },
-      { data: educationRows },
-      { data: skillRows },
-      { data: projectRows },
-      { data: socialLinksRow },
-      { data: siteMetadataRow },
-    ] = await Promise.all([
+    const [pi, edu, skills, proj, social, meta] = await Promise.all([
       supabase.from("personal_info").select("*").single(),
       supabase.from("education").select("*").order("sort_order"),
       supabase.from("skill_categories").select("*").order("sort_order"),
@@ -161,31 +139,52 @@ export async function fetchAllPortfolioData(): Promise<PortfolioPageData> {
       supabase.from("site_metadata").select("*").single(),
     ]);
 
+    // Handle missing single-row data by returning defaults if necessary
+    // In a real app, you might want to throw or handle initialization better.
+    if (!pi.data || !social.data || !meta.data) {
+      throw new Error("Missing critical portfolio data");
+    }
+
     return {
-      personalInfo: personalInfoRow
-        ? mapPersonalInfo(personalInfoRow)
-        : fallbackPersonalInfo,
-      education: educationRows?.length
-        ? mapEducation(educationRows)
-        : fallbackEducation,
-      skills: skillRows?.length ? mapSkills(skillRows) : fallbackSkills,
-      projects: projectRows?.length ? mapProjects(projectRows) : fallbackProjects,
-      socialLinks: socialLinksRow
-        ? mapSocialLinks(socialLinksRow)
-        : fallbackSocialLinks,
-      siteMetadata: siteMetadataRow
-        ? mapSiteMetadata(siteMetadataRow)
-        : fallbackSiteMetadata,
+      personalInfo: mapPersonalInfo(pi.data),
+      socialLinks: {
+        linkedin: social.data.linkedin || "",
+        github: social.data.github || "",
+        email: social.data.email || "",
+      },
+      education: mapEducation(edu.data || []),
+      skills: mapSkills(skills.data || []),
+      projects: mapProjects(proj.data || []),
+      siteMetadata: mapSiteMetadata(meta.data),
     };
   } catch (error) {
-    console.error("Failed to fetch from Supabase, using fallback data:", error);
+    console.error("Error fetching portfolio data:", error);
+    // Return fallback data if DB fails
     return {
-      personalInfo: fallbackPersonalInfo,
-      education: fallbackEducation,
-      skills: fallbackSkills,
-      projects: fallbackProjects,
-      socialLinks: fallbackSocialLinks,
-      siteMetadata: fallbackSiteMetadata,
+      personalInfo: {
+        name: "Steven Lagadapati",
+        role: "Data Science Master",
+        tagline: "Data Scientist in Training",
+        description: "Error loading data.",
+        aboutDescription: "",
+        email: "",
+        location: "",
+        availability: "",
+        image: "",
+        resume: "",
+      },
+      socialLinks: { linkedin: "", github: "", email: "" },
+      education: [],
+      skills: {},
+      projects: [],
+      siteMetadata: {
+        title: "Portfolio",
+        description: "",
+        url: "",
+        image: "",
+        keywords: [],
+        projectCategories: [],
+      },
     };
   }
 }

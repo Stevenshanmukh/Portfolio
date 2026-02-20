@@ -6,6 +6,8 @@ export const personalInfo = {
   tagline: "Data Scientist in Training",
   description:
     "I transform complex datasets into actionable insights. Specializing in machine learning, predictive modeling, and advanced data visualization to drive decision-making.",
+  aboutDescription:
+    "I am a passionate Data Scientist with a strong foundation in machine learning and statistical analysis. My journey involves...",
   email: "stevenlagadapati1012@gmail.com",
   location: "Florida, USA",
   availability: "Open to new opportunities",
@@ -68,6 +70,7 @@ export const projects: Project[] = [
     longDescription:
       "Built a comprehensive sentiment analysis pipeline using NLTK and transformers. The model achieved 87% accuracy in classifying positive, negative, and neutral sentiments. Implemented data cleaning, feature extraction, and model training workflows.",
     category: "Machine Learning",
+    categories: ["Machine Learning"],
     tags: ["Python", "NLTK", "Scikit-learn", "Pandas"],
     image: "/images/projects/sentiment.jpg",
     github: "https://github.com/yourusername/sentiment-analysis",
@@ -82,6 +85,7 @@ export const projects: Project[] = [
     longDescription:
       "Implemented YOLOv8 for real-time object detection with OpenCV. The system processes video streams at 30 FPS and can detect common objects with high accuracy. Includes custom training on specific object classes.",
     category: "Machine Learning",
+    categories: ["Machine Learning"],
     tags: ["OpenCV", "YOLO", "PyTorch", "Computer Vision"],
     image: "/images/projects/object-detection.jpg",
     github: "https://github.com/yourusername/object-detection",
@@ -96,6 +100,7 @@ export const projects: Project[] = [
     longDescription:
       "Created an interactive Tableau dashboard that visualizes climate data from NASA and NOAA. Users can explore temperature trends, precipitation patterns, and CO2 levels across different time periods and geographic regions.",
     category: "Data Science",
+    categories: ["Data Science"],
     tags: ["Tableau", "SQL", "R", "Data Visualization"],
     image: "/images/projects/climate.jpg",
     github: null,
@@ -110,6 +115,7 @@ export const projects: Project[] = [
     longDescription:
       "Built a machine learning pipeline for predicting house prices based on features like location, size, age, and amenities. Implemented extensive feature engineering and hyperparameter tuning to achieve R² score of 0.91.",
     category: "Machine Learning",
+    categories: ["Machine Learning"],
     tags: ["Python", "XGBoost", "Pandas", "Feature Engineering"],
     image: "/images/projects/housing.jpg",
     github: "https://github.com/yourusername/housing-prediction",
@@ -124,6 +130,7 @@ export const projects: Project[] = [
     longDescription:
       "Built using React, Tailwind CSS, and Node.js. Features project filtering, responsive design, and smooth animations. Deployed on Vercel with continuous integration.",
     category: "Web Dev",
+    categories: ["Web Dev"],
     tags: ["React", "Tailwind", "Node.js", "Vercel"],
     image: "/images/projects/portfolio.jpg",
     github: "https://github.com/yourusername/portfolio-v1",
@@ -138,6 +145,7 @@ export const projects: Project[] = [
     longDescription:
       "Researched and implemented various neural network pruning techniques to reduce model size while maintaining accuracy. Achieved 60% reduction in model size with only 2% accuracy loss on ImageNet dataset.",
     category: "Research",
+    categories: ["Research"],
     tags: ["TensorFlow", "Research", "Deep Learning", "Optimization"],
     image: "/images/projects/pruning.jpg",
     github: null,
@@ -165,6 +173,13 @@ export const siteMetadata = {
     "Portfolio",
     "Steven Lagadapati",
     "FAU",
+    "FAU",
     "Data Scientist",
+  ],
+  projectCategories: [
+    "Machine Learning",
+    "Data Science",
+    "Web Dev",
+    "Research",
   ],
 };
