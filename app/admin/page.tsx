@@ -25,6 +25,8 @@ import {
 import { supabase } from "@/lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 import { TagInput } from "@/components/ui/TagInput";
+import { SortableList } from "@/components/ui/SortableList";
+import { SortableTagList } from "@/components/ui/SortableTagList";
 import type {
   DbEducation,
   DbSkillCategory,
@@ -353,28 +355,56 @@ function SocialLinksEditor({ data, onChange }: {
 function EducationEditor({ data, onChange }: {
   data: FormData["education"]; onChange: (d: FormData["education"]) => void;
 }) {
-  const addEntry = () => onChange([...data, { institution: "", degree: "", period: "", status: "", description: "", skills: [], sort_order: data.length }]);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const addEntry = () => {
+    const newEntry = { institution: "", degree: "", period: "", status: "", description: "", skills: [], sort_order: data.length };
+    onChange([...data, newEntry]);
+    setExpandedIdx(data.length);
+  };
   const updateEntry = (index: number, field: string, value: any) => onChange(data.map((e, i) => i === index ? { ...e, [field]: value } : e));
-  const removeEntry = (index: number) => onChange(data.filter((_, i) => i !== index));
+  const removeEntry = (index: number) => {
+    onChange(data.filter((_, i) => i !== index));
+    if (expandedIdx === index) setExpandedIdx(null);
+  };
 
   return (
-    <SectionCard title="Education" description="Your academic background.">
-      {data.map((edu, idx) => (
-        <div key={idx} className="p-4 bg-neutral-800/50 border border-neutral-700 rounded-lg space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-neutral-300">Entry #{idx + 1}</span>
-            <button onClick={() => removeEntry(idx)} className="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+    <SectionCard title="Education" description="Drag to reorder. Click to expand & edit.">
+      <SortableList
+        items={data}
+        onChange={onChange}
+        keyExtractor={(item, i) => item.id ?? `new-${i}`}
+        renderItem={(edu, idx) => (
+          <div>
+            <div
+              onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+              className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${expandedIdx === idx ? "bg-white/5 border border-neutral-600" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"}`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <ChevronRight className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${expandedIdx === idx ? "rotate-90" : ""}`} />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{edu.institution || "New Entry"}</p>
+                  <p className="text-xs text-neutral-400">{edu.degree || "No degree set"}{edu.period ? ` · ${edu.period}` : ""}</p>
+                </div>
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); removeEntry(idx); }}
+                className="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors shrink-0"><Trash2 className="w-4 h-4" /></button>
+            </div>
+
+            {expandedIdx === idx && (
+              <div className="mt-2 p-4 bg-neutral-800/30 border border-neutral-700 rounded-lg space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input label="Institution" value={edu.institution} onChange={(v) => updateEntry(idx, "institution", v)} />
+                  <Input label="Degree" value={edu.degree} onChange={(v) => updateEntry(idx, "degree", v)} />
+                  <Input label="Period" value={edu.period} onChange={(v) => updateEntry(idx, "period", v)} placeholder="2022 - 2024" />
+                  <Input label="Status" value={edu.status} onChange={(v) => updateEntry(idx, "status", v)} placeholder="Graduated / In Progress" />
+                </div>
+                <TextArea label="Description" value={edu.description} onChange={(v) => updateEntry(idx, "description", v)} rows={2} />
+                <TagInput label="Skills / Coursework" tags={edu.skills} onChange={(tags) => updateEntry(idx, "skills", tags)} placeholder="Add a skill" />
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Institution" value={edu.institution} onChange={(v) => updateEntry(idx, "institution", v)} />
-            <Input label="Degree" value={edu.degree} onChange={(v) => updateEntry(idx, "degree", v)} />
-            <Input label="Period" value={edu.period} onChange={(v) => updateEntry(idx, "period", v)} placeholder="2022 - 2024" />
-            <Input label="Status" value={edu.status} onChange={(v) => updateEntry(idx, "status", v)} placeholder="Graduated / In Progress" />
-          </div>
-          <TextArea label="Description" value={edu.description} onChange={(v) => updateEntry(idx, "description", v)} rows={2} />
-          <TagInput label="Skills / Coursework" tags={edu.skills} onChange={(tags) => updateEntry(idx, "skills", tags)} placeholder="Add a skill" />
-        </div>
-      ))}
+        )}
+      />
       <button onClick={addEntry} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-neutral-500 text-neutral-400 hover:text-neutral-200 rounded-lg flex items-center justify-center gap-2 transition-colors">
         <Plus className="w-4 h-4" /> Add Education Entry
       </button>
@@ -386,31 +416,56 @@ function SkillsEditor({ data, onChange }: {
   data: FormData["skillCategories"]; onChange: (d: FormData["skillCategories"]) => void;
 }) {
   const [newCategory, setNewCategory] = useState("");
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const addCategory = () => {
     const name = newCategory.trim();
     if (name && !data.some((c) => c.name === name)) {
       onChange([...data, { name, icon: "Code", description: "", items: [], sort_order: data.length }]);
       setNewCategory("");
+      setExpandedIdx(data.length);
     }
   };
-  const removeCategory = (idx: number) => onChange(data.filter((_, i) => i !== idx));
+  const removeCategory = (idx: number) => {
+    onChange(data.filter((_, i) => i !== idx));
+    if (expandedIdx === idx) setExpandedIdx(null);
+  };
   const updateCategory = (idx: number, field: string, value: any) => onChange(data.map((c, i) => i === idx ? { ...c, [field]: value } : c));
 
   return (
-    <SectionCard title="Skills" description="Technical skills grouped by category.">
-      {data.map((cat, idx) => (
-        <div key={idx} className="p-4 bg-neutral-800/50 border border-neutral-700 rounded-lg space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-base font-semibold text-white">{cat.name}</span>
-            <button onClick={() => removeCategory(idx)} className="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+    <SectionCard title="Skills" description="Drag to reorder skill categories. Click to expand & edit.">
+      <SortableList
+        items={data}
+        onChange={onChange}
+        keyExtractor={(item, i) => item.id ?? `new-${i}`}
+        renderItem={(cat, idx) => (
+          <div>
+            <div
+              onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+              className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${expandedIdx === idx ? "bg-white/5 border border-neutral-600" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"}`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <ChevronRight className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform ${expandedIdx === idx ? "rotate-90" : ""}`} />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{cat.name}</p>
+                  <p className="text-xs text-neutral-400">{cat.items.length} skill{cat.items.length !== 1 ? "s" : ""} · {cat.icon}</p>
+                </div>
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); removeCategory(idx); }}
+                className="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors shrink-0"><Trash2 className="w-4 h-4" /></button>
+            </div>
+
+            {expandedIdx === idx && (
+              <div className="mt-2 p-4 bg-neutral-800/30 border border-neutral-700 rounded-lg space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select label="Icon" value={cat.icon} onChange={(v) => updateCategory(idx, "icon", v)} options={ICON_OPTIONS} />
+                  <Input label="Description" value={cat.description} onChange={(v) => updateCategory(idx, "description", v)} />
+                </div>
+                <TagInput label="Skills" tags={cat.items} onChange={(items) => updateCategory(idx, "items", items)} placeholder="Add a skill" />
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Select label="Icon" value={cat.icon} onChange={(v) => updateCategory(idx, "icon", v)} options={ICON_OPTIONS} />
-            <Input label="Description" value={cat.description} onChange={(v) => updateCategory(idx, "description", v)} />
-          </div>
-          <TagInput label="Skills" tags={cat.items} onChange={(items) => updateCategory(idx, "items", items)} placeholder="Add a skill" />
-        </div>
-      ))}
+        )}
+      />
       <div className="flex gap-2">
         <input value={newCategory} onChange={(e) => setNewCategory(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCategory(); } }}
@@ -447,10 +502,13 @@ function ProjectEditor({ data, onChange, suggestions }: ProjectEditorProps) {
   };
 
   return (
-    <SectionCard title="Projects" description="Click a project to edit it.">
-      <div className="space-y-2">
-        {data.map((project, idx) => (
-          <div key={idx}>
+    <SectionCard title="Projects" description="Drag to reorder. Click a project to edit it.">
+      <SortableList
+        items={data}
+        onChange={onChange}
+        keyExtractor={(item, i) => item.id ?? `new-${i}`}
+        renderItem={(project, idx) => (
+          <div>
             <div onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
               className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${editingIdx === idx ? "bg-white/5 border border-neutral-600" : "bg-neutral-800/50 border border-neutral-700 hover:border-neutral-600"
                 }`}>
@@ -493,8 +551,8 @@ function ProjectEditor({ data, onChange, suggestions }: ProjectEditorProps) {
               </div>
             )}
           </div>
-        ))}
-      </div>
+        )}
+      />
       <button onClick={addProject} className="w-full py-3 border-2 border-dashed border-neutral-700 hover:border-neutral-500 text-neutral-400 hover:text-neutral-200 rounded-lg flex items-center justify-center gap-2 transition-colors">
         <Plus className="w-4 h-4" /> Add New Project
       </button>
@@ -514,7 +572,13 @@ function MetadataEditor({ data, onChange }: {
         <Input label="Site URL" value={data.url} onChange={(v) => set("url", v)} placeholder="https://yourportfolio.vercel.app" />
         <Input label="OG Image Path" value={data.image} onChange={(v) => set("image", v)} />
       </div>
-      <TagInput label="Project Categories" tags={data.projectCategories} onChange={(cats) => set("projectCategories", cats)} placeholder="Add category (e.g. Machine Learning)" />
+      <SortableTagList
+        label="Project Categories"
+        tags={data.projectCategories}
+        onChange={(cats) => set("projectCategories", cats)}
+        placeholder="Add category (e.g. Machine Learning)"
+        description="Drag to reorder the filter tabs on your portfolio's Projects section."
+      />
       <TagInput label="SEO Keywords" tags={data.keywords} onChange={(kw) => set("keywords", kw)} placeholder="Add a keyword" />
     </SectionCard>
   );
