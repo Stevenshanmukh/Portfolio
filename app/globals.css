@@ -6,9 +6,12 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #030014;
+  overscroll-behavior: none;
 }
 
 body {
+  background-color: #030014;
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -131,10 +134,12 @@ body {
 }
 
 @keyframes box1 {
+
   0%,
   50% {
     transform: translate(100%, 0);
   }
+
   100% {
     transform: translate(200%, 0);
   }
@@ -144,19 +149,23 @@ body {
   0% {
     transform: translate(0, 100%);
   }
+
   50% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(100%, 0);
   }
 }
 
 @keyframes box3 {
+
   0%,
   50% {
     transform: translate(100%, 100%);
   }
+
   100% {
     transform: translate(0, 100%);
   }
@@ -166,9 +175,11 @@ body {
   0% {
     transform: translate(200%, 0);
   }
+
   50% {
     transform: translate(200%, 100%);
   }
+
   100% {
     transform: translate(100%, 100%);
   }
