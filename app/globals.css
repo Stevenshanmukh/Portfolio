@@ -7,10 +7,9 @@
 }
 
 @theme {
-  /* Page ground: one flat near-black, no gradient. */
-  --color-ink: #0b0b0c;
-  /* The only accent. It means "approved / signed off" and is used for nothing else. */
-  --color-approved: oklch(0.8 0.13 152);
+  /* Black and white only: one flat near-black ground, white ink, greys between. */
+  --color-ink: #09090a;
+  --color-panel: #111113;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -44,7 +43,7 @@ body {
 :focus-visible {
   outline: 2px solid #fafafa;
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 a {
@@ -73,10 +72,26 @@ section[id] {
   scroll-margin-top: 4.5rem;
 }
 
+/* Long-running loops stop while their region is off-screen. */
+[data-offscreen] .loop {
+  animation-play-state: paused;
+}
+
+/* ===== Hero portrait ring ===== */
+.orbit {
+  animation: orbit-spin 80s linear infinite;
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ===== Run trace (hero) =====
    Each step's timing comes from --at (start) and, for the approve step,
    --hold (how long it waits for sign-off). The resting styles are the final
-   state, so the panel reads correctly with animations off or CSS-only. */
+   state, so the card reads correctly with animations off or CSS only. */
 
 .run-step {
   animation: run-step-in 380ms var(--ease-out-expo) both;
@@ -84,12 +99,18 @@ section[id] {
 }
 
 .run-done {
-  animation: run-pop 280ms var(--ease-out-expo) both;
-  animation-delay: calc(var(--at) + 240ms);
+  animation: run-pop 300ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--at) + 260ms);
 }
 
-.run-done-approve {
-  animation-delay: calc(var(--at) + var(--hold) + 160ms);
+/* Approval pops in and inverts its badge: the one moment that turns solid white. */
+.run-badge-approve {
+  animation:
+    run-pop 300ms var(--ease-out-expo) both,
+    run-invert 420ms var(--ease-out-expo) both;
+  animation-delay:
+    calc(var(--at) + var(--hold)),
+    calc(var(--at) + var(--hold) + 120ms);
 }
 
 .run-awaiting {
@@ -113,8 +134,15 @@ section[id] {
   animation-delay: calc(var(--at) + var(--hold));
 }
 
-/* Paused until the panel scrolls into view (set by RunTrace on narrow screens). */
-.run-trace[data-waiting] * {
+/* The rail fills from the first step to the last. */
+.run-rail-fill {
+  transform-origin: top;
+  animation: run-rail var(--span) linear both;
+  animation-delay: var(--from);
+}
+
+/* Paused until the card scrolls into view (set by AgentRun on narrow screens). */
+.agent-run[data-waiting] * {
   animation-play-state: paused;
 }
 
@@ -129,6 +157,13 @@ section[id] {
   from {
     opacity: 0;
     transform: scale(0.5);
+  }
+}
+
+@keyframes run-invert {
+  from {
+    background-color: transparent;
+    color: #fafafa;
   }
 }
 
@@ -165,18 +200,41 @@ section[id] {
   }
 }
 
-/* ===== Experience ledger =====
-   Guardrail checks land row by row once the table scrolls into view.
-   Visible by default; LedgerTable arms them only when JS is running. */
-
-.ledger[data-armed] .ledger-check {
-  opacity: 0;
+@keyframes run-rail {
+  from {
+    transform: scaleY(0);
+  }
 }
 
-.ledger[data-played] .ledger-check {
-  opacity: 1;
-  animation: run-pop 300ms var(--ease-out-expo) both;
-  animation-delay: calc(var(--row) * 110ms + 120ms);
+/* The write target's tile flashes when the write pulse lands. */
+.net-hit {
+  opacity: 0;
+  animation: net-hit 900ms var(--ease-out-expo) both;
+}
+
+@keyframes net-hit {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ===== Experience timeline =====
+   The rail draws with scroll (ExperienceSection); dots light as cards arrive. */
+.timeline-dot {
+  transition:
+    background-color 400ms var(--ease-out-expo),
+    box-shadow 400ms var(--ease-out-expo);
+}
+
+.timeline-item[data-reached] .timeline-dot {
+  background-color: #fafafa;
+  box-shadow: 0 0 0 4px rgb(250 250 250 / 0.12);
 }
 
 /* ===== Reduced motion =====

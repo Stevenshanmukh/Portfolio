@@ -1,0 +1,27 @@
+// Icon names offered in Studio for projects and guardrails. Each must exist in
+// ICONS in lib/icons.ts (the website), which maps them to lucide-react icons.
+export const ICON_NAMES = [
+  'Bot',
+  'Brain',
+  'Car',
+  'ChartColumn',
+  'Code',
+  'Database',
+  'FileCheck',
+  'Film',
+  'Gauge',
+  'History',
+  'LayoutDashboard',
+  'Mic',
+  'Newspaper',
+  'Palette',
+  'Presentation',
+  'Salad',
+  'Scan',
+  'SearchCheck',
+  'ShoppingCart',
+  'Stethoscope',
+  'Store',
+  'UserCheck',
+  'Workflow',
+]

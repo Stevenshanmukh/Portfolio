@@ -83,6 +83,31 @@ export type Project = {
   _updatedAt: string;
   _rev: string;
   title: string;
+  slug: Slug;
+  icon?:
+    | "Bot"
+    | "Brain"
+    | "Car"
+    | "ChartColumn"
+    | "Code"
+    | "Database"
+    | "FileCheck"
+    | "Film"
+    | "Gauge"
+    | "History"
+    | "LayoutDashboard"
+    | "Mic"
+    | "Newspaper"
+    | "Palette"
+    | "Presentation"
+    | "Salad"
+    | "Scan"
+    | "SearchCheck"
+    | "ShoppingCart"
+    | "Stethoscope"
+    | "Store"
+    | "UserCheck"
+    | "Workflow";
   description: string;
   longDescription?: string;
   categories?: Array<
@@ -106,13 +131,6 @@ export type Project = {
     caption?: string;
     _type: "image";
   };
-  image?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
   githubUrl?: string;
   demoUrl?: string;
   orderRank?: string;
@@ -132,6 +150,12 @@ export type SanityImageHotspot = {
   y: number;
   height: number;
   width: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current: string;
+  source?: string;
 };
 
 export type Experience = {
@@ -213,6 +237,30 @@ export type Profile = {
   aboutDescription?: string;
   guardrails?: Array<{
     label: string;
+    icon?:
+      | "Bot"
+      | "Brain"
+      | "Car"
+      | "ChartColumn"
+      | "Code"
+      | "Database"
+      | "FileCheck"
+      | "Film"
+      | "Gauge"
+      | "History"
+      | "LayoutDashboard"
+      | "Mic"
+      | "Newspaper"
+      | "Palette"
+      | "Presentation"
+      | "Salad"
+      | "Scan"
+      | "SearchCheck"
+      | "ShoppingCart"
+      | "Stethoscope"
+      | "Store"
+      | "UserCheck"
+      | "Workflow";
     title: string;
     body: string;
     seenIn?: string;
@@ -335,12 +383,6 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: "slug";
-  current: string;
-  source?: string;
-};
-
 export type AllSanitySchemaTypes =
   | Education
   | SkillCategory
@@ -350,6 +392,7 @@ export type AllSanitySchemaTypes =
   | Project
   | SanityImageCrop
   | SanityImageHotspot
+  | Slug
   | Experience
   | SiteSettings
   | SanityFileAssetReference
@@ -361,12 +404,11 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset
-  | Geopoint
-  | Slug;
+  | Geopoint;
 
 // Source: ../lib/sanity/queries.ts
 // Variable: PORTFOLIO_QUERY
-// Query: {  "profile": *[_type == "profile" && _id == "profile"][0]{    name, role, tagline, headline, heroDescription, aboutDescription, email,    location, availability, photo, "resumeUrl": resume.asset->url,    proofPoints[]{ value, label },    runTraceTitle,    runTrace[]{ kind, text },    guardrails[]{ label, title, body, seenIn },    certifications, githubUrl, linkedinUrl  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, url, ogImage, keywords  },  "experience": *[_type == "experience"] | order(orderRank) {    _id, role, company, companyUrl, period, location, summary,    systems[]{ name, actsOn, guardrail, result },    highlights, skills  },  "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },  "projects": *[_type == "project"] | order(orderRank) {    _id, title, description, longDescription,    "categories": categories[]->title,    tags, image, githubUrl, demoUrl, caseStudy, caseStudyPoints,    context, actsOn, guardrail, result,    artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }  },  "skills": *[_type == "skillCategory"] | order(orderRank) {    _id, name, icon, description, items  },  "education": *[_type == "education"] | order(orderRank) {    _id, institution, degree, period, status, description, skills  }}
+// Query: {  "profile": *[_type == "profile" && _id == "profile"][0]{    name, role, tagline, headline, heroDescription, aboutDescription, email,    location, availability, photo, "resumeUrl": resume.asset->url,    proofPoints[]{ value, label },    runTraceTitle,    runTrace[]{ kind, text },    guardrails[]{ label, icon, title, body, seenIn },    certifications, githubUrl, linkedinUrl  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, url, ogImage, keywords  },  "experience": *[_type == "experience"] | order(orderRank) {    _id, role, company, companyUrl, period, location, summary,    systems[]{ name, actsOn, guardrail, result },    highlights, skills  },  "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },  "projects": *[_type == "project"] | order(orderRank) {    _id, title, "slug": slug.current, icon, description, longDescription,    "categories": categories[]->title,    tags, githubUrl, demoUrl, caseStudy, caseStudyPoints,    context, actsOn, guardrail, result,    artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }  },  "skills": *[_type == "skillCategory"] | order(orderRank) {    _id, name, icon, description, items  },  "education": *[_type == "education"] | order(orderRank) {    _id, institution, degree, period, status, description, skills  }}
 export type PORTFOLIO_QUERY_RESULT = {
   profile: {
     name: string;
@@ -397,6 +439,31 @@ export type PORTFOLIO_QUERY_RESULT = {
     }> | null;
     guardrails: Array<{
       label: string;
+      icon:
+        | "Bot"
+        | "Brain"
+        | "Car"
+        | "ChartColumn"
+        | "Code"
+        | "Database"
+        | "FileCheck"
+        | "Film"
+        | "Gauge"
+        | "History"
+        | "LayoutDashboard"
+        | "Mic"
+        | "Newspaper"
+        | "Palette"
+        | "Presentation"
+        | "Salad"
+        | "Scan"
+        | "SearchCheck"
+        | "ShoppingCart"
+        | "Stethoscope"
+        | "Store"
+        | "UserCheck"
+        | "Workflow"
+        | null;
       title: string;
       body: string;
       seenIn: string | null;
@@ -442,17 +509,36 @@ export type PORTFOLIO_QUERY_RESULT = {
   projects: Array<{
     _id: string;
     title: string;
+    slug: string;
+    icon:
+      | "Bot"
+      | "Brain"
+      | "Car"
+      | "ChartColumn"
+      | "Code"
+      | "Database"
+      | "FileCheck"
+      | "Film"
+      | "Gauge"
+      | "History"
+      | "LayoutDashboard"
+      | "Mic"
+      | "Newspaper"
+      | "Palette"
+      | "Presentation"
+      | "Salad"
+      | "Scan"
+      | "SearchCheck"
+      | "ShoppingCart"
+      | "Stethoscope"
+      | "Store"
+      | "UserCheck"
+      | "Workflow"
+      | null;
     description: string;
     longDescription: string | null;
     categories: Array<string> | null;
     tags: Array<string> | null;
-    image: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    } | null;
     githubUrl: string | null;
     demoUrl: string | null;
     caseStudy: boolean | null;

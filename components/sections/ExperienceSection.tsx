@@ -1,132 +1,140 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { motion, useReducedMotion, useScroll } from "motion/react";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { usePortfolio } from "@/lib/portfolio-context";
 import type { Experience } from "@/lib/types";
 import { Credentials } from "./Credentials";
-import { LedgerTable } from "./LedgerTable";
 
-function CompanyName({ job }: { job: Experience }) {
-  if (!job.companyUrl) return <span>{job.company}</span>;
+/** What a role card lists: shipped systems with their results, else highlights. */
+function bulletsFor(job: Experience) {
+  if (job.systems.length > 0) {
+    return job.systems.map((s) => (s.result ? `${s.name}: ${s.result}` : s.name));
+  }
+  return job.highlights;
+}
+
+function TimelineItem({ job }: { job: Experience }) {
+  const ref = useRef<HTMLLIElement>(null);
+
+  // Light the dot once the card reaches the middle of the screen.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.setAttribute("data-reached", "");
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -45% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const bullets = bulletsFor(job);
+
   return (
-    <Link
-      href={job.companyUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 underline decoration-white/25 hover:decoration-white"
+    <li
+      ref={ref}
+      className="timeline-item grid gap-3 md:grid-cols-[7rem_1.25rem_minmax(0,1fr)] md:gap-x-5"
     >
-      {job.company}
-      <ArrowUpRight aria-hidden="true" className="size-3.5" />
-      <span className="sr-only"> (opens in a new tab)</span>
-    </Link>
-  );
-}
-
-function Meta({ job }: { job: Experience }) {
-  return (
-    <p className="font-mono text-[13px] tabular-nums text-neutral-400">
-      {[job.period, job.location].filter(Boolean).join(" · ")}
-    </p>
-  );
-}
-
-/** A role with shipped systems: header, then the ledger. */
-function LedgerRole({ job }: { job: Experience }) {
-  return (
-    <article aria-labelledby={`${job.id}-title`}>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-        <div>
-          <h3 id={`${job.id}-title`} className="text-xl font-semibold text-white">
-            {job.role}
-          </h3>
-          <p className="mt-1 text-neutral-200">
-            <CompanyName job={job} />
-          </p>
-        </div>
-        <Meta job={job} />
-      </div>
-      {job.summary && <p className="mt-3 max-w-[62ch] text-neutral-400">{job.summary}</p>}
-      <div className="mt-8">
-        <LedgerTable systems={job.systems} caption={`Systems built as ${job.role} at ${job.company}`} />
-      </div>
-      {job.skills.length > 0 && (
-        <p className="mt-5 text-sm text-neutral-400">
-          <span className="text-neutral-300">Stack:</span> {job.skills.join(" · ")}
-        </p>
-      )}
-    </article>
-  );
-}
-
-/** A role without a ledger: one compact row. */
-function CompactRole({ job }: { job: Experience }) {
-  return (
-    <li className="grid gap-2 border-t border-white/10 py-6 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8">
-      <div className="min-w-0">
-        <h4 className="font-semibold text-white">
-          {job.role}
-          <span className="font-normal text-neutral-300">
-            {" "}
-            at <CompanyName job={job} />
+      <p className="font-mono text-[13px] leading-relaxed tabular-nums text-neutral-400 md:pt-6 md:text-right">
+        {/* "May 2026 – Present" reads as two lines: start, then end. */}
+        {job.period.split(/\s+[–-]\s+/).map((part, i, parts) => (
+          <span key={i} className="md:block">
+            {part}
+            {i < parts.length - 1 && " – "}
           </span>
-        </h4>
-        {job.highlights.length > 0 && (
-          <ul className="mt-2 max-w-[62ch] space-y-1.5 text-neutral-300">
-            {job.highlights.map((item) => (
-              <li key={item} className="leading-relaxed">
-                {item}
+        ))}
+      </p>
+      <span aria-hidden="true" className="relative hidden justify-center md:flex">
+        <span className="timeline-dot mt-7 size-3 rounded-full border border-white/40 bg-ink" />
+      </span>
+      <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <div>
+            <h3 className="text-lg font-semibold text-white">{job.role}</h3>
+            <p className="mt-0.5 text-neutral-200">
+              {job.companyUrl ? (
+                <Link
+                  href={job.companyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 underline decoration-white/25 hover:decoration-white"
+                >
+                  {job.company}
+                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </Link>
+              ) : (
+                job.company
+              )}
+              {job.location && <span className="text-neutral-400"> · {job.location}</span>}
+            </p>
+          </div>
+          {job.skills.length > 0 && (
+            <ul className="flex flex-wrap gap-1.5 sm:max-w-[45%] sm:justify-end" aria-label="Tools used">
+              {job.skills.slice(0, 4).map((skill) => (
+                <li key={skill} className="rounded-md border border-white/10 px-2 py-1 text-xs text-neutral-300">
+                  {skill}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {bullets.length > 0 && (
+          <ul className="mt-4 space-y-2">
+            {bullets.map((item) => (
+              <li key={item} className="flex gap-3 leading-relaxed text-neutral-300">
+                <span aria-hidden="true" className="mt-[0.7em] size-1 shrink-0 rounded-full bg-neutral-400" />
+                <span>{item}</span>
               </li>
             ))}
           </ul>
         )}
-      </div>
-      <div className="md:text-right">
-        <Meta job={job} />
-      </div>
+      </article>
     </li>
   );
 }
 
 export function ExperienceSection() {
   const { experience } = usePortfolio();
+  const listRef = useRef<HTMLOListElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: listRef, offset: ["start 75%", "end 55%"] });
+
   if (experience.length === 0) return null;
 
-  const ledgerRoles = experience.filter((job) => job.systems.length > 0);
-  const compactRoles = experience.filter((job) => job.systems.length === 0);
-
   return (
-    <section id="experience" aria-labelledby="experience-title" className="px-6 py-20 md:py-28 lg:px-8">
+    <section id="experience" aria-labelledby="experience-title" className="px-6 py-20 md:py-24 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <h2
+        <SectionHeading
           id="experience-title"
-          className="font-serif text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
-        >
-          Experience
-        </h2>
-        <p className="mt-4 max-w-[60ch] text-neutral-300">
-          I build AI agents and reporting automation for a marketing agency. Before that: internships in
-          AI engineering and derivatives analytics.
-        </p>
+          title="Experience"
+          intro="I build AI agents and reporting automation for a marketing agency. Before that: internships in AI engineering and derivatives analytics."
+        />
 
-        <div className="mt-14 space-y-16">
-          {ledgerRoles.map((job) => (
-            <LedgerRole key={job.id} job={job} />
+        <ol ref={listRef} className="relative mt-12 space-y-5">
+          {/* The rail behind the dots draws itself as you scroll through the roles. */}
+          <span
+            aria-hidden="true"
+            className="absolute bottom-6 left-[calc(7rem+1.25rem+0.625rem)] top-8 hidden w-px bg-white/10 md:block"
+          >
+            <motion.span
+              className="absolute inset-0 origin-top bg-white/55"
+              style={{ scaleY: reduce ? 1 : scrollYProgress }}
+            />
+          </span>
+          {experience.map((job) => (
+            <TimelineItem key={job.id} job={job} />
           ))}
-        </div>
-
-        {compactRoles.length > 0 && (
-          <div className={ledgerRoles.length > 0 ? "mt-16" : "mt-14"}>
-            {ledgerRoles.length > 0 && (
-              <h3 className="mb-2 text-sm font-medium text-neutral-400">Before that</h3>
-            )}
-            <ul className="border-b border-white/10">
-              {compactRoles.map((job) => (
-                <CompactRole key={job.id} job={job} />
-              ))}
-            </ul>
-          </div>
-        )}
+        </ol>
 
         <Credentials />
       </div>

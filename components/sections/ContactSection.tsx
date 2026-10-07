@@ -1,128 +1,83 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Check, Copy } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight, FileText, Github, Linkedin, Mail } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
 
-type CopyStatus = "idle" | "copied" | "failed";
+const iconButton =
+  "inline-flex size-12 items-center justify-center rounded-xl border border-white/20 text-white transition-colors hover:border-white/40 hover:bg-white/5";
 
 export function ContactSection() {
   const { personalInfo, socialLinks } = usePortfolio();
-  const [status, setStatus] = useState<CopyStatus>("idle");
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const [local, domain] = personalInfo.email.split("@");
-
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(personalInfo.email);
-      setStatus("copied");
-    } catch {
-      setStatus("failed");
-    }
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setStatus("idle"), 2500);
-  };
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="px-6 py-20 md:py-28 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-12 border-t border-white/10 pt-16 lg:grid-cols-2 lg:gap-16">
+    <section id="contact" aria-labelledby="contact-title" className="px-6 py-20 md:py-24 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 rounded-2xl border border-white/10 bg-white/[0.03] p-7 md:p-10 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2
             id="contact-title"
-            className="font-serif text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
+            className="font-serif text-[clamp(2rem,3.6vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-white"
           >
-            Hiring for AI or automation work?
+            Let&apos;s build something
           </h2>
-          <p className="mt-4 max-w-[52ch] leading-relaxed text-neutral-300">
-            I&apos;m open to AI &amp; Automation Engineer roles. Email is the fastest way to reach me.
+          <p className="mt-3 max-w-[52ch] leading-relaxed text-neutral-300">
+            I&apos;m open to AI &amp; Automation Engineer roles, and always happy to talk about AI, data or
+            automation.
           </p>
-          {personalInfo.location && (
-            <p className="mt-6 text-sm text-neutral-400">Based in {personalInfo.location}</p>
+          {personalInfo.email && (
+            <p className="mt-3 break-words text-sm text-neutral-400">
+              {personalInfo.email}
+              {personalInfo.location && <> · Based in {personalInfo.location}</>}
+            </p>
           )}
         </div>
 
-        {personalInfo.email && (
-          <div className="lg:pt-2">
-            <p className="text-xl font-medium tracking-[-0.01em] text-white sm:text-2xl">
-              {domain ? (
-                <>
-                  {local}
-                  <wbr />@{domain}
-                </>
-              ) : (
-                personalInfo.email
-              )}
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href={`mailto:${personalInfo.email}`}
-                className="inline-flex min-h-11 items-center rounded-lg bg-white px-5 text-sm font-medium text-neutral-950 transition-opacity hover:opacity-85"
-              >
-                Email me
-              </Link>
-              <button
-                type="button"
-                onClick={copyEmail}
-                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/20 px-5 text-sm font-medium text-neutral-100 transition-colors hover:border-white/40 hover:bg-white/5"
-              >
-                {status === "copied" ? (
-                  <Check aria-hidden="true" className="size-4" />
-                ) : (
-                  <Copy aria-hidden="true" className="size-4" />
-                )}
-                {status === "copied" ? "Copied" : status === "failed" ? "Couldn't copy" : "Copy email"}
-              </button>
-              <span aria-live="polite" className="sr-only">
-                {status === "copied"
-                  ? "Email address copied."
-                  : status === "failed"
-                    ? "Couldn't copy. Select the address above instead."
-                    : ""}
-              </span>
-            </div>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              {personalInfo.resume && (
-                <Link
-                  href={personalInfo.resume}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-9 items-center gap-1 text-neutral-300 underline decoration-white/25 hover:text-white hover:decoration-white"
-                >
-                  Resume
-                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                  <span className="sr-only"> (PDF, opens in a new tab)</span>
-                </Link>
-              )}
-              {socialLinks.linkedin && (
-                <Link
-                  href={socialLinks.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-9 items-center gap-1 text-neutral-300 underline decoration-white/25 hover:text-white hover:decoration-white"
-                >
-                  LinkedIn
-                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </Link>
-              )}
-              {socialLinks.github && (
-                <Link
-                  href={socialLinks.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-9 items-center gap-1 text-neutral-300 underline decoration-white/25 hover:text-white hover:decoration-white"
-                >
-                  GitHub
-                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {personalInfo.email && (
+            <Link
+              href={`mailto:${personalInfo.email}`}
+              className="group inline-flex min-h-12 items-center gap-2.5 rounded-xl bg-white px-5 text-sm font-semibold text-neutral-950 transition-opacity hover:opacity-90"
+            >
+              <Mail aria-hidden="true" className="size-4" />
+              Get in touch
+              <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          )}
+          {socialLinks.linkedin && (
+            <Link
+              href={socialLinks.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn (opens in a new tab)"
+              className={iconButton}
+            >
+              <Linkedin aria-hidden="true" className="size-5" />
+            </Link>
+          )}
+          {socialLinks.github && (
+            <Link
+              href={socialLinks.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub (opens in a new tab)"
+              className={iconButton}
+            >
+              <Github aria-hidden="true" className="size-5" />
+            </Link>
+          )}
+          {personalInfo.resume && (
+            <Link
+              href={personalInfo.resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-12 items-center gap-2.5 rounded-xl border border-white/20 px-5 text-sm font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/5"
+            >
+              <FileText aria-hidden="true" className="size-4" />
+              View resume
+              <span className="sr-only"> (PDF, opens in a new tab)</span>
+            </Link>
+          )}
+        </div>
       </div>
     </section>
   );

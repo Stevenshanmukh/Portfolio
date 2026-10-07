@@ -9,6 +9,10 @@ export interface Artifact {
 export interface Project {
   id: string;
   title: string;
+  /** URL segment for /projects/<slug>. */
+  slug: string;
+  /** Icon name from lib/icons.ts. */
+  icon: string;
   description: string;
   /** Shown when a project is expanded; falls back to `description`. */
   longDescription?: string;
@@ -83,6 +87,8 @@ export interface RunStep {
 
 export interface Guardrail {
   label: string;
+  /** Icon name from lib/icons.ts. */
+  icon: string;
   title: string;
   body: string;
   seenIn: string;

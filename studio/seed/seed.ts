@@ -6,6 +6,7 @@
  *   npm run seed -- -- --fill                add fields missing from existing documents, keep the rest
  *   npm run seed -- -- --resume=<path.pdf>   also upload a resume PDF to the profile
  *   npm run seed -- -- --assets=<dir>        also upload case-study screenshots named in ./data.ts
+ *   npm run seed -- -- --photo=<path>        also upload a profile photo (hotspot set on the face)
  *
  * (The second `--` is how `sanity exec` passes arguments through to the script.)
  *
@@ -80,6 +81,7 @@ const docs: IdentifiedSanityDocumentStub[] = [
       _id,
       _type: 'project',
       ...project,
+      slug: {_type: 'slug', current: slug(project.title)},
       categories: categories.map((title) => ({
         _type: 'reference',
         _ref: categoryId(title),
@@ -124,6 +126,18 @@ async function uploadArtifact(dir: string, artifact: {file: string; alt: string;
   }
 }
 
+async function uploadPhoto(path: string) {
+  const asset = await client.assets.upload('image', createReadStream(path), {filename: basename(path)})
+  console.log(`Uploaded photo ${asset.originalFilename} (${asset._id}).`)
+  return {
+    _type: 'image',
+    asset: {_type: 'reference', _ref: asset._id},
+    // Head-and-shoulders portrait: keep the face in frame when cropped to a circle.
+    hotspot: {_type: 'sanity.imageHotspot', x: 0.5, y: 0.38, width: 0.62, height: 0.5},
+    crop: {_type: 'sanity.imageCrop', top: 0, bottom: 0, left: 0, right: 0},
+  }
+}
+
 const arg = (name: string) =>
   process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(`--${name}=`.length)
 
@@ -132,11 +146,11 @@ async function main() {
   const fill = process.argv.includes('--fill')
   const resumePath = arg('resume')
   const assetsDir = arg('assets')
+  const photoPath = arg('photo')
+  const profileDoc = docs.find((doc) => doc._id === 'profile')!
 
-  if (resumePath) {
-    const profileDoc = docs.find((doc) => doc._id === 'profile')!
-    profileDoc.resume = await uploadResume(resumePath)
-  }
+  if (resumePath) profileDoc.resume = await uploadResume(resumePath)
+  if (photoPath) profileDoc.photo = await uploadPhoto(photoPath)
 
   if (assetsDir) {
     for (const [id, artifact] of artifacts) {

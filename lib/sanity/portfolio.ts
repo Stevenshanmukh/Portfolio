@@ -32,11 +32,13 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
     return {
       id: p._id,
       title: p.title ?? "",
+      slug: p.slug ?? p._id,
+      icon: p.icon ?? "Code",
       description: p.description ?? "",
       longDescription: p.longDescription ?? undefined,
       categories: (p.categories ?? []).filter(Boolean),
       tags: p.tags ?? [],
-      image: artifactUrl || imageUrl(p.image, 1200, 630),
+      image: artifactUrl,
       github: p.githubUrl ?? null,
       demo: p.demoUrl ?? null,
       caseStudy: p.caseStudy ?? false,
@@ -73,7 +75,7 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
       email: profile.email ?? "",
       location: profile.location ?? "",
       availability: profile.availability ?? "",
-      image: imageUrl(profile.photo, 160, 160),
+      image: imageUrl(profile.photo, 480, 480),
       resume: profile.resumeUrl ?? "",
       proofPoints: (profile.proofPoints ?? [])
         .filter((p) => p.value && p.label)
@@ -84,6 +86,7 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
         .map((s) => ({ kind: s.kind, text: s.text })),
       guardrails: (profile.guardrails ?? []).map((g) => ({
         label: g.label ?? "",
+        icon: g.icon ?? "",
         title: g.title ?? "",
         body: g.body ?? "",
         seenIn: g.seenIn ?? "",

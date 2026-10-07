@@ -2,23 +2,26 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { usePortfolio } from "@/lib/portfolio-context";
-import { NAV_ITEMS } from "@/lib/nav";
+import { NAV_ITEMS, sectionId } from "@/lib/nav";
 
-/** Tracks which section is under the navbar, for aria-current and styling. */
+/** Tracks which home section is under the navbar, for aria-current and styling. */
 function useActiveSection() {
+  const pathname = usePathname();
   const [active, setActive] = useState("");
 
   useEffect(() => {
-    const sections = NAV_ITEMS.map((item) => document.querySelector(item.href)).filter(
-      (el): el is Element => el !== null
+    if (pathname !== "/") return;
+    const sections = NAV_ITEMS.map((item) => document.getElementById(sectionId(item.href))).filter(
+      (el): el is HTMLElement => el !== null
     );
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+          if (entry.isIntersecting) setActive(`/#${entry.target.id}`);
         }
       },
       // A thin band near the top of the viewport decides the active section.
@@ -26,9 +29,10 @@ function useActiveSection() {
     );
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
-  return active;
+  // Project pages belong to "Projects".
+  return pathname.startsWith("/projects") ? "/#projects" : active;
 }
 
 export function Navbar() {
@@ -54,16 +58,16 @@ export function Navbar() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        isScrolled || menuOpen ? "border-b border-white/10 bg-ink/85 backdrop-blur-md" : "bg-transparent"
+        isScrolled || menuOpen ? "border-b border-white/10 bg-ink/95" : "bg-transparent"
       }`}
     >
       <nav aria-label="Main" className="mx-auto max-w-6xl px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link
-            href="#top"
-            className="text-sm font-medium tracking-tight text-neutral-100 transition-opacity hover:opacity-70"
-          >
-            {personalInfo.name}
+          <Link href="/" className="group text-sm tracking-tight transition-opacity hover:opacity-80">
+            <span className="font-semibold text-white">{personalInfo.name}</span>
+            {personalInfo.role && (
+              <span className="hidden text-neutral-400 md:inline"> · {personalInfo.role}</span>
+            )}
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">

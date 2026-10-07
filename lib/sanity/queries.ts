@@ -9,7 +9,7 @@ export const PORTFOLIO_QUERY = defineQuery(`{
     proofPoints[]{ value, label },
     runTraceTitle,
     runTrace[]{ kind, text },
-    guardrails[]{ label, title, body, seenIn },
+    guardrails[]{ label, icon, title, body, seenIn },
     certifications, githubUrl, linkedinUrl
   },
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{
@@ -22,9 +22,9 @@ export const PORTFOLIO_QUERY = defineQuery(`{
   },
   "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },
   "projects": *[_type == "project"] | order(orderRank) {
-    _id, title, description, longDescription,
+    _id, title, "slug": slug.current, icon, description, longDescription,
     "categories": categories[]->title,
-    tags, image, githubUrl, demoUrl, caseStudy, caseStudyPoints,
+    tags, githubUrl, demoUrl, caseStudy, caseStudyPoints,
     context, actsOn, guardrail, result,
     artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }
   },

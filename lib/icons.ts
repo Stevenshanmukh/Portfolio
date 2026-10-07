@@ -1,0 +1,72 @@
+import {
+  BarChart3,
+  Bot,
+  Brain,
+  Car,
+  ChartColumn,
+  Cloud,
+  Code,
+  Cpu,
+  Database,
+  FileCheck,
+  Film,
+  Gauge,
+  History,
+  Layers,
+  LayoutDashboard,
+  Mic,
+  Newspaper,
+  Palette,
+  Plug,
+  Presentation,
+  Salad,
+  Scan,
+  SearchCheck,
+  ShoppingCart,
+  Stethoscope,
+  Store,
+  UserCheck,
+  Workflow,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+
+/**
+ * Icon names that content can reference. Project and guardrail names must
+ * match studio/schemaTypes/icons.ts; skill names match skillCategory.ts.
+ */
+export const ICONS: Record<string, LucideIcon> = {
+  BarChart3,
+  Bot,
+  Brain,
+  Car,
+  ChartColumn,
+  Cloud,
+  Code,
+  Cpu,
+  Database,
+  FileCheck,
+  Film,
+  Gauge,
+  History,
+  Layers,
+  LayoutDashboard,
+  Mic,
+  Newspaper,
+  Palette,
+  Plug,
+  Presentation,
+  Salad,
+  Scan,
+  SearchCheck,
+  ShoppingCart,
+  Stethoscope,
+  Store,
+  UserCheck,
+  Workflow,
+  Wrench,
+};
+
+export function iconFor(name: string, fallback: LucideIcon = Code): LucideIcon {
+  return ICONS[name] ?? fallback;
+}

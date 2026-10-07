@@ -25,24 +25,28 @@ export const profile = {
   guardrails: [
     {
       label: 'read-only',
+      icon: 'Database',
       title: 'Sources stay read-only',
       body: "Agents read source files and live ad data. They can't change them.",
       seenIn: 'Slides reporting agent',
     },
     {
       label: 'verify',
+      icon: 'SearchCheck',
       title: 'Numbers get checked',
       body: 'Every AI summary is checked against the source data before anyone sees it.',
       seenIn: 'Daily and monthly client reporting',
     },
     {
       label: 'sign-off',
+      icon: 'UserCheck',
       title: 'A person approves the plan',
       body: 'The agent proposes what it will change. Nothing is written until someone signs off.',
       seenIn: 'Slides reporting agent, team build standard',
     },
     {
       label: 'rollback',
+      icon: 'History',
       title: 'Changes can be undone',
       body: 'Edits can be rolled back, and unsafe updates are blocked before they land.',
       seenIn: 'WordPress MCP gateway, Shopify and Sage X3 sync',
@@ -165,6 +169,7 @@ export const projectCategories = ['AI & Automation', 'Full-Stack', 'Machine Lear
 
 type SeedProject = {
   title: string
+  icon: string
   description: string
   longDescription: string
   categories: string[]
@@ -189,6 +194,7 @@ export const projects: SeedProject[] = [
   {
     // Employer work: CV facts only, no client names, data or screenshots.
     title: 'Slides reporting agent',
+    icon: 'Presentation',
     description:
       'A Claude Agent SDK agent that refreshes client Google Slides decks from live ad data, without touching the source files.',
     longDescription:
@@ -203,6 +209,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'MedIntel AI',
+    icon: 'Stethoscope',
     description:
       'Clinical RAG system that turns doctor-patient visit transcripts into structured data. Questions about medications or first mentions go to SQL, narrative questions go to retrieval, and unsafe questions get refused.',
     longDescription:
@@ -225,6 +232,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'CartBuddy',
+    icon: 'ShoppingCart',
     description:
       'Shared shopping lists for households and roommates. Changes sync live across phones, and the list keeps working offline and catches up when the connection returns.',
     longDescription:
@@ -236,6 +244,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'UI/UX Design Consultant Skill',
+    icon: 'Palette',
     description:
       'A Claude Code skill that audits a frontend in six phases, scores it across 12 categories, and refactors the code to fix hierarchy, spacing, contrast and accessibility problems.',
     longDescription:
@@ -246,6 +255,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Vehicle Price Prediction',
+    icon: 'Gauge',
     description:
       'XGBoost model that predicts used-car sale prices from 558,825 vehicle sales, tuned with Optuna to a test R² of 0.968, with drift monitoring and a Streamlit app.',
     longDescription:
@@ -257,6 +267,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'n8n AI Automation Workflows',
+    icon: 'Workflow',
     description:
       'Nine importable n8n workflows for common business jobs: support routing, lead scoring, onboarding, invoice approval, CRM enrichment, email sequences, daily ops reports, candidate screening and a supply-chain agent.',
     longDescription:
@@ -278,6 +289,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'VettedCV',
+    icon: 'FileCheck',
     description:
       'AI career workspace: paste a job description to get a match score and ATS keyword check, tailor your resume to it, and track applications on a Kanban board.',
     longDescription:
@@ -300,6 +312,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Pneumonia X-ray Classification',
+    icon: 'Scan',
     description:
       'Compared a CNN baseline, DenseNet121, EfficientNet-B0 and ViT-B/16 for spotting pneumonia in pediatric chest X-rays. The ViT reached 92.31% accuracy and 98.21% sensitivity.',
     longDescription:
@@ -310,6 +323,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'PaylessCars',
+    icon: 'Car',
     description:
       'Car marketplace where buyers and dealers negotiate with offers and counter-offers. Separate dashboards for buyers, dealers and admins, plus side-by-side comparison and saved cars.',
     longDescription:
@@ -320,6 +334,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'DataAnalyze Skill',
+    icon: 'ChartColumn',
     description:
       'A Claude Code skill that runs exploratory data analysis on any dataset: profiling, outlier and correlation checks, feature importance, and an interactive HTML report.',
     longDescription:
@@ -330,6 +345,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'GhostWriter',
+    icon: 'Mic',
     description:
       'Offline dictation for Windows 11. Press F8, speak, and Whisper transcribes on your machine and pastes the text into whatever app is open. Nothing goes to the cloud.',
     longDescription:
@@ -340,6 +356,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Brief Digest',
+    icon: 'Newspaper',
     description:
       'No-code weekly newsletter. Readers pick a country and topics, Perplexity writes a digest for each group, and Make.com sends it.',
     longDescription:
@@ -351,6 +368,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Anime Recommender',
+    icon: 'Film',
     description:
       'Recommends anime from 19,931 MyAnimeList titles. FAISS finds similar candidates, a LightGBM ranker orders them, and SHAP explains why each pick made the list.',
     longDescription:
@@ -362,6 +380,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Meet Your Macros',
+    icon: 'Salad',
     description:
       'Local-first nutrition tracker that works out your calorie and macro targets, helps you build meals, and tracks the day. Your data stays in the browser.',
     longDescription:
@@ -373,6 +392,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Retail Analytics',
+    icon: 'Store',
     description:
       'Ten notebooks on a 1M-row retail dataset covering sales forecasting, price elasticity, customer segmentation and lifetime value, with a multi-page Streamlit dashboard.',
     longDescription:
@@ -383,6 +403,7 @@ export const projects: SeedProject[] = [
   },
   {
     title: 'Power BI Dashboards',
+    icon: 'LayoutDashboard',
     description:
       'Four interactive Power BI dashboards on ecommerce sales, HR and people analytics, IMDb films, and sales performance.',
     longDescription:

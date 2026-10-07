@@ -1,5 +1,6 @@
 import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
 import {defineField, defineType} from 'sanity'
+import {ICON_NAMES} from './icons'
 
 export const project = defineType({
   name: 'project',
@@ -8,6 +9,21 @@ export const project = defineType({
   orderings: [orderRankOrdering],
   fields: [
     defineField({name: 'title', type: 'string', validation: (r) => r.required()}),
+    defineField({
+      name: 'slug',
+      title: 'Page URL',
+      type: 'slug',
+      description: 'The project page address, /projects/<this>. Click Generate to make it from the title.',
+      options: {source: 'title', maxLength: 64},
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'icon',
+      type: 'string',
+      description: 'Shown on project tiles.',
+      options: {list: ICON_NAMES, layout: 'dropdown'},
+      initialValue: 'Code',
+    }),
     defineField({
       name: 'description',
       type: 'text',
@@ -86,12 +102,6 @@ export const project = defineType({
       ],
     }),
     defineField({
-      name: 'image',
-      type: 'image',
-      description: 'Optional square thumbnail. Not shown on the current design.',
-      options: {hotspot: true},
-    }),
-    defineField({
       name: 'githubUrl',
       title: 'GitHub URL',
       type: 'url',
@@ -106,6 +116,6 @@ export const project = defineType({
     orderRankField({type: 'project'}),
   ],
   preview: {
-    select: {title: 'title', subtitle: 'description', media: 'image'},
+    select: {title: 'title', subtitle: 'description', media: 'artifact'},
   },
 })

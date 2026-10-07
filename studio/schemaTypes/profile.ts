@@ -1,4 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {ICON_NAMES} from './icons'
 
 // Step kinds the hero's run trace understands. Must match RUN_KINDS in
 // components/sections/RunTrace.tsx (the website).
@@ -27,7 +28,7 @@ export const profile = defineType({
       type: 'string',
       group: 'hero',
       description:
-        'The big line in the hero. Write it as two sentences: the first (shown dimmer) is what you build, the second (shown bright) is what makes it different.',
+        'The big line in the hero. The first sentence shows in white; everything after it shows in grey.',
       validation: (r) => r.max(110).warning('Long headlines wrap to many lines on phones.'),
     }),
     defineField({
@@ -82,7 +83,7 @@ export const profile = defineType({
       type: 'array',
       group: 'hero',
       description:
-        'The illustrative agent run animated in the hero. Steps play in order; the "approve" step waits for sign-off before turning green. Use exactly one.',
+        'The illustrative agent run animated in the hero. Steps play in order; the "approve" step waits for sign-off before it lights up. Use exactly one.',
       of: [
         defineArrayMember({
           type: 'object',
@@ -132,6 +133,12 @@ export const profile = defineType({
           name: 'guardrail',
           fields: [
             defineField({name: 'label', type: 'string', description: 'Short tag, e.g. "read-only"', validation: (r) => r.required()}),
+            defineField({
+              name: 'icon',
+              type: 'string',
+              options: {list: ICON_NAMES, layout: 'dropdown'},
+              initialValue: 'Database',
+            }),
             defineField({name: 'title', type: 'string', validation: (r) => r.required()}),
             defineField({name: 'body', type: 'text', rows: 2, validation: (r) => r.required()}),
             defineField({name: 'seenIn', title: 'Seen in', type: 'string', description: 'Where this guardrail ships, e.g. "WordPress MCP gateway"'}),
@@ -144,7 +151,7 @@ export const profile = defineType({
       name: 'photo',
       type: 'image',
       group: 'about',
-      description: 'Shown small next to your name in the hero. Set the hotspot on your face.',
+      description: 'Shown as a circle in the hero. Set the hotspot on your face.',
       options: {hotspot: true},
     }),
     defineField({
