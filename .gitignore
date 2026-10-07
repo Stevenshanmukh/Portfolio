@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Claude Code
 .claude/
+
+# Impeccable design-review snapshots (local)
+/.impeccable/

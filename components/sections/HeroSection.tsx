@@ -1,131 +1,124 @@
 "use client";
 
-import { motion } from "motion/react";
-import { Github, Linkedin, ArrowDown } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { Github, Linkedin } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
+import { RunTrace } from "./RunTrace";
+
+/** Splits "First sentence. The rest." so the second part can sit dimmer. */
+function splitHeadline(headline: string): [string, string] {
+  const match = headline.match(/^(.+?[.!?])\s+(.+)$/);
+  return match ? [match[1], match[2]] : [headline, ""];
+}
 
 export function HeroSection() {
   const { personalInfo, socialLinks } = usePortfolio();
+  const [lead, rest] = splitHeadline(personalInfo.headline || personalInfo.role);
 
   return (
-    <section className="relative py-24 md:py-32 flex items-center justify-center px-6 lg:px-8">
-      <motion.div
-        className="max-w-3xl mx-auto w-full text-center"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-      >
-        <div className="space-y-8">
-          {/* Name */}
-          <motion.h1
-            className="font-serif text-4xl sm:text-5xl md:text-7xl font-semibold tracking-tight leading-[1.1] text-white"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {personalInfo.name}
-          </motion.h1>
-
-          {/* Role */}
-          <motion.p
-            className="text-lg sm:text-xl md:text-2xl text-neutral-400 font-light"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            {personalInfo.role}
-          </motion.p>
-
-          {/* Description */}
-          <motion.p
-            className="text-sm sm:text-base md:text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            {personalInfo.description}
-          </motion.p>
-
-          {/* Availability */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-neutral-700 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-neutral-50" />
-              <span className="text-xs text-neutral-400">
-                {personalInfo.availability}
+    <section aria-labelledby="hero-title" className="px-6 pb-12 pt-28 md:pb-16 md:pt-36 lg:px-8">
+      <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16">
+        <div>
+          <div className="mb-8 flex items-center gap-3">
+            {personalInfo.image && (
+              <Image
+                src={personalInfo.image}
+                alt=""
+                width={40}
+                height={40}
+                priority
+                className="size-10 rounded-full border border-white/10 object-cover"
+              />
+            )}
+            <p className="text-sm text-neutral-300">
+              <span className="font-medium text-white">{personalInfo.name}</span>
+              <span aria-hidden="true" className="mx-2 text-neutral-500">
+                /
               </span>
-            </div>
-          </motion.div>
+              {personalInfo.role}
+            </p>
+          </div>
 
-          {/* CTA buttons */}
-          <motion.div
-            className="flex items-center justify-center gap-3"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+          <h1
+            id="hero-title"
+            className="max-w-[22ch] text-balance font-serif text-[clamp(2.25rem,4.4vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white"
           >
-            <Link
-              href="#projects"
-              className="px-6 py-3 bg-white text-neutral-950 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
-            >
-              View Projects
-            </Link>
+            {lead}
+            {rest && <span className="text-neutral-400"> {rest}</span>}
+          </h1>
+
+          <p className="mt-6 max-w-[56ch] text-lg leading-relaxed text-neutral-300">
+            {personalInfo.description}
+          </p>
+
+          {personalInfo.proofPoints.length > 0 && (
+            <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-white/10 pt-6 sm:grid-cols-4">
+              {personalInfo.proofPoints.map((point) => (
+                <li key={point.label} className="min-w-0">
+                  <span className="block font-mono text-base tabular-nums text-white">{point.value}</span>
+                  <span className="mt-1 block text-sm leading-snug text-neutral-400">{point.label}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {personalInfo.availability && (
+            <p className="mt-10 inline-flex items-center gap-2 text-sm text-neutral-300">
+              <span aria-hidden="true" className="size-2 rounded-full bg-approved" />
+              {personalInfo.availability}
+            </p>
+          )}
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             {personalInfo.resume && (
               <Link
                 href={personalInfo.resume}
                 target="_blank"
-                className="px-6 py-3 border border-neutral-600 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/5 transition-colors"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center rounded-lg bg-white px-5 text-sm font-medium text-neutral-950 transition-opacity hover:opacity-85"
               >
                 Resume
+                <span className="sr-only"> (PDF, opens in a new tab)</span>
               </Link>
             )}
-          </motion.div>
-
-          {/* Social icons */}
-          <motion.div
-            className="flex items-center justify-center gap-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
             <Link
-              href={socialLinks.github}
-              target="_blank"
-              className="text-neutral-500 hover:text-neutral-50 transition-colors"
-              aria-label="GitHub"
+              href="#contact"
+              className="inline-flex min-h-11 items-center rounded-lg border border-white/20 px-5 text-sm font-medium text-neutral-100 transition-colors hover:border-white/40 hover:bg-white/5"
             >
-              <Github className="w-5 h-5" />
+              Get in touch
             </Link>
-            <Link
-              href={socialLinks.linkedin}
-              target="_blank"
-              className="text-neutral-500 hover:text-neutral-50 transition-colors"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="w-5 h-5" />
-            </Link>
-          </motion.div>
+            <span className="flex items-center gap-1">
+              {socialLinks.github && (
+                <Link
+                  href={socialLinks.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub (opens in a new tab)"
+                  className="inline-flex size-11 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  <Github aria-hidden="true" className="size-5" />
+                </Link>
+              )}
+              {socialLinks.linkedin && (
+                <Link
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn (opens in a new tab)"
+                  className="inline-flex size-11 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  <Linkedin aria-hidden="true" className="size-5" />
+                </Link>
+              )}
+            </span>
+          </div>
         </div>
-      </motion.div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-12 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 1 }}
-      >
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ArrowDown className="w-4 h-4 text-neutral-600" />
-        </motion.div>
-      </motion.div>
+        {personalInfo.runTrace.length > 0 && (
+          <RunTrace title={personalInfo.runTraceTitle} steps={personalInfo.runTrace} />
+        )}
+      </div>
     </section>
   );
 }

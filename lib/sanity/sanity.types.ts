@@ -91,6 +91,17 @@ export type Project = {
     } & ProjectCategoryReference
   >;
   tags?: Array<string>;
+  caseStudy?: boolean;
+  caseStudyPoints?: Array<string>;
+  artifact?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
+    _type: "image";
+  };
   image?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -100,7 +111,6 @@ export type Project = {
   };
   githubUrl?: string;
   demoUrl?: string;
-  featured?: boolean;
   orderRank?: string;
 };
 
@@ -132,6 +142,14 @@ export type Experience = {
   period: string;
   location?: string;
   summary?: string;
+  systems?: Array<{
+    name: string;
+    actsOn?: string;
+    guardrail?: string;
+    result?: string;
+    _type: "system";
+    _key: string;
+  }>;
   highlights?: Array<string>;
   skills?: Array<string>;
   orderRank?: string;
@@ -171,12 +189,32 @@ export type Profile = {
   _rev: string;
   name: string;
   role: string;
-  tagline: string;
+  headline?: string;
   heroDescription: string;
-  aboutDescription?: string;
-  email: string;
-  location?: string;
   availability?: string;
+  proofPoints?: Array<{
+    value: string;
+    label: string;
+    _type: "proofPoint";
+    _key: string;
+  }>;
+  runTraceTitle?: string;
+  runTrace?: Array<{
+    kind: "read" | "check" | "plan" | "approve" | "write";
+    text: string;
+    _type: "runStep";
+    _key: string;
+  }>;
+  tagline: string;
+  aboutDescription?: string;
+  guardrails?: Array<{
+    label: string;
+    title: string;
+    body: string;
+    seenIn?: string;
+    _type: "guardrail";
+    _key: string;
+  }>;
   photo?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -184,12 +222,14 @@ export type Profile = {
     crop?: SanityImageCrop;
     _type: "image";
   };
+  certifications?: Array<string>;
+  email: string;
+  location?: string;
   resume?: {
     asset?: SanityFileAssetReference;
     media?: unknown;
     _type: "file";
   };
-  certifications?: Array<string>;
   githubUrl: string;
   linkedinUrl: string;
 };
@@ -322,12 +362,13 @@ export type AllSanitySchemaTypes =
 
 // Source: ../lib/sanity/queries.ts
 // Variable: PORTFOLIO_QUERY
-// Query: {  "profile": *[_type == "profile" && _id == "profile"][0]{    name, role, tagline, heroDescription, aboutDescription, email, location,    availability, photo, "resumeUrl": resume.asset->url, certifications,    githubUrl, linkedinUrl  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, url, ogImage, keywords  },  "experience": *[_type == "experience"] | order(orderRank) {    _id, role, company, companyUrl, period, location, summary, highlights, skills  },  "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },  "projects": *[_type == "project"] | order(orderRank) {    _id, title, description, longDescription,    "categories": categories[]->title,    tags, image, githubUrl, demoUrl, featured  },  "skills": *[_type == "skillCategory"] | order(orderRank) {    _id, name, icon, description, items  },  "education": *[_type == "education"] | order(orderRank) {    _id, institution, degree, period, status, description, skills  }}
+// Query: {  "profile": *[_type == "profile" && _id == "profile"][0]{    name, role, tagline, headline, heroDescription, aboutDescription, email,    location, availability, photo, "resumeUrl": resume.asset->url,    proofPoints[]{ value, label },    runTraceTitle,    runTrace[]{ kind, text },    guardrails[]{ label, title, body, seenIn },    certifications, githubUrl, linkedinUrl  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, url, ogImage, keywords  },  "experience": *[_type == "experience"] | order(orderRank) {    _id, role, company, companyUrl, period, location, summary,    systems[]{ name, actsOn, guardrail, result },    highlights, skills  },  "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },  "projects": *[_type == "project"] | order(orderRank) {    _id, title, description, longDescription,    "categories": categories[]->title,    tags, image, githubUrl, demoUrl, caseStudy, caseStudyPoints,    artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }  },  "skills": *[_type == "skillCategory"] | order(orderRank) {    _id, name, icon, description, items  },  "education": *[_type == "education"] | order(orderRank) {    _id, institution, degree, period, status, description, skills  }}
 export type PORTFOLIO_QUERY_RESULT = {
   profile: {
     name: string;
     role: string;
     tagline: string;
+    headline: string | null;
     heroDescription: string;
     aboutDescription: string | null;
     email: string;
@@ -341,6 +382,21 @@ export type PORTFOLIO_QUERY_RESULT = {
       _type: "image";
     } | null;
     resumeUrl: string | null;
+    proofPoints: Array<{
+      value: string;
+      label: string;
+    }> | null;
+    runTraceTitle: string | null;
+    runTrace: Array<{
+      kind: "approve" | "check" | "plan" | "read" | "write";
+      text: string;
+    }> | null;
+    guardrails: Array<{
+      label: string;
+      title: string;
+      body: string;
+      seenIn: string | null;
+    }> | null;
     certifications: Array<string> | null;
     githubUrl: string;
     linkedinUrl: string;
@@ -366,6 +422,12 @@ export type PORTFOLIO_QUERY_RESULT = {
     period: string;
     location: string | null;
     summary: string | null;
+    systems: Array<{
+      name: string;
+      actsOn: string | null;
+      guardrail: string | null;
+      result: string | null;
+    }> | null;
     highlights: Array<string> | null;
     skills: Array<string> | null;
   }>;
@@ -389,7 +451,17 @@ export type PORTFOLIO_QUERY_RESULT = {
     } | null;
     githubUrl: string | null;
     demoUrl: string | null;
-    featured: boolean | null;
+    caseStudy: boolean | null;
+    caseStudyPoints: Array<string> | null;
+    artifact: {
+      asset: SanityImageAssetReference | null;
+      alt: string | null;
+      caption: string | null;
+      dimensions: {
+        width: number;
+        height: number;
+      } | null;
+    } | null;
   }>;
   skills: Array<{
     _id: string;

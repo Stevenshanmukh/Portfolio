@@ -1,195 +1,89 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { useRef, useState } from "react";
-import { Award, Download, Linkedin, Github, Mail } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+import { Award } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
 
-function ProfileImage({ src, name }: { src: string; name: string }) {
-  const [failed, setFailed] = useState(false);
-  const initials = name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2);
-
-  const hasImage = src && src.startsWith("http") && !failed;
-
-  if (hasImage) {
-    return (
-      <Image
-        src={src}
-        alt={name}
-        fill
-        className="object-cover"
-        sizes="(max-width: 640px) 176px, 208px"
-        onError={() => setFailed(true)}
-        priority
-      />
-    );
-  }
-
-  return (
-    <div className="w-full h-full flex items-center justify-center bg-neutral-800">
-      <span className="text-4xl sm:text-5xl font-serif font-semibold text-neutral-600">
-        {initials}
-      </span>
-    </div>
-  );
-}
-
 export function AboutSection() {
-  const { personalInfo, education, certifications, socialLinks } = usePortfolio();
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const { personalInfo, education, certifications } = usePortfolio();
+  const bio = personalInfo.aboutDescription || personalInfo.description;
 
   return (
-    <section id="about" className="pt-12 md:pt-16 pb-24 md:pb-32 px-6 lg:px-8" ref={ref}>
-      <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          {/* Profile block */}
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
-            {/* Avatar */}
-            <div className="shrink-0">
-              <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden border border-neutral-700">
-                <ProfileImage
-                  src={personalInfo.image}
-                  name={personalInfo.name}
-                />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 space-y-6">
-              <div>
-                <h3 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight mb-2 text-white">
-                  {personalInfo.name}
-                </h3>
-                <p className="text-lg text-neutral-400">
-                  {personalInfo.tagline}
-                </p>
-              </div>
-
-              <p className="text-neutral-400 leading-relaxed">
-                {personalInfo.aboutDescription || personalInfo.description}
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                {personalInfo.resume && (
-                  <Link
-                    href={personalInfo.resume}
-                    target="_blank"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-950 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Resume</span>
-                  </Link>
-                )}
-                <Link
-                  href={socialLinks.linkedin}
-                  target="_blank"
-                  className="p-2.5 border border-neutral-700 rounded-lg text-neutral-400 hover:text-neutral-50 hover:border-neutral-500 transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </Link>
-                <Link
-                  href={socialLinks.github}
-                  target="_blank"
-                  className="p-2.5 border border-neutral-700 rounded-lg text-neutral-400 hover:text-neutral-50 hover:border-neutral-500 transition-colors"
-                  aria-label="GitHub"
-                >
-                  <Github className="w-4 h-4" />
-                </Link>
-                <Link
-                  href={`mailto:${personalInfo.email}`}
-                  className="p-2.5 border border-neutral-700 rounded-lg text-neutral-400 hover:text-neutral-50 hover:border-neutral-500 transition-colors"
-                  aria-label="Email"
-                >
-                  <Mail className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
+    <section id="about" aria-labelledby="about-title" className="px-6 py-20 md:py-28 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+          <div>
+            <h2
+              id="about-title"
+              className="font-serif text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
+            >
+              How I build agents
+            </h2>
+            {bio && <p className="mt-6 max-w-[60ch] leading-relaxed text-neutral-300">{bio}</p>}
           </div>
 
-          {/* Education */}
-          {education.map((edu) => (
-            <div
-              key={edu.id}
-              className="mt-16 p-8 border border-neutral-700/50 rounded-2xl bg-white/[0.02]"
-            >
-              <div
-                className={`flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 ${
-                  edu.description || edu.skills.length > 0 ? "mb-4" : ""
-                }`}
-              >
-                <div>
-                  <h3 className="font-serif text-xl font-semibold tracking-tight mb-1 text-white">
-                    {edu.institution}
-                  </h3>
-                  <p className="text-neutral-400">{edu.degree}</p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  {edu.period && (
-                    <span className="text-sm text-neutral-500">{edu.period}</span>
-                  )}
-                  {edu.status && (
-                    <span className="px-2.5 py-1 border border-neutral-700 rounded-full text-xs font-medium text-neutral-300">
-                      {edu.status}
-                    </span>
-                  )}
-                </div>
-              </div>
-              {edu.description && (
-                <p className="text-neutral-400 mb-6 leading-relaxed">
-                  {edu.description}
-                </p>
-              )}
-              {edu.skills.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {edu.skills.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1.5 border border-neutral-700 rounded-lg text-xs font-medium text-neutral-400"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Certifications & awards */}
-          {certifications.length > 0 && (
-            <div className="mt-8 p-8 border border-neutral-700/50 rounded-2xl bg-white/[0.02]">
-              <h3 className="font-serif text-xl font-semibold tracking-tight mb-4 text-white">
-                Certifications &amp; awards
-              </h3>
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {certifications.map((item) => (
-                  <li
-                    key={item}
-                    className="flex gap-3 text-neutral-400 leading-relaxed"
-                  >
-                    <Award
-                      aria-hidden="true"
-                      className="w-4 h-4 mt-1 text-neutral-500 shrink-0"
-                    />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {personalInfo.guardrails.length > 0 && (
+            <ol className="divide-y divide-white/10 border-y border-white/10">
+              {personalInfo.guardrails.map((rule) => (
+                <li
+                  key={rule.title}
+                  className="grid gap-2 py-6 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-6"
+                >
+                  <span className="pt-1 font-mono text-xs text-neutral-400">{rule.label}</span>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{rule.title}</h3>
+                    <p className="mt-1.5 max-w-[60ch] leading-relaxed text-neutral-300">{rule.body}</p>
+                    {rule.seenIn && (
+                      <p className="mt-2 text-sm text-neutral-400">Seen in: {rule.seenIn}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
           )}
-        </motion.div>
+        </div>
+
+        {(education.length > 0 || certifications.length > 0) && (
+          <div className="mt-20 grid gap-12 border-t border-white/10 pt-12 md:grid-cols-2">
+            {education.length > 0 && (
+              <div>
+                <h3 className="mb-5 text-sm font-medium text-neutral-400">Education</h3>
+                <ul className="space-y-6">
+                  {education.map((edu) => (
+                    <li key={edu.id}>
+                      <p className="font-medium text-white">{edu.institution}</p>
+                      <p className="text-neutral-300">{edu.degree}</p>
+                      {(edu.period || edu.status) && (
+                        <p className="mt-1 font-mono text-[13px] tabular-nums text-neutral-400">
+                          {[edu.period, edu.status].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                      {edu.description && (
+                        <p className="mt-2 max-w-[60ch] leading-relaxed text-neutral-300">{edu.description}</p>
+                      )}
+                      {edu.skills.length > 0 && (
+                        <p className="mt-2 text-sm text-neutral-400">{edu.skills.join(" · ")}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {certifications.length > 0 && (
+              <div>
+                <h3 className="mb-5 text-sm font-medium text-neutral-400">Certifications &amp; awards</h3>
+                <ul className="space-y-3">
+                  {certifications.map((item) => (
+                    <li key={item} className="flex gap-3 leading-relaxed text-neutral-300">
+                      <Award aria-hidden="true" className="mt-1 size-4 shrink-0 text-neutral-400" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

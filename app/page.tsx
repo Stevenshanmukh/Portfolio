@@ -7,8 +7,6 @@ import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { SkillsSection } from "@/components/sections/SkillsSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { ContactSection } from "@/components/sections/ContactSection";
-import { PageTransition } from "@/components/ui/PageTransition";
-import { StarsWrapper } from "@/components/ui/StarsWrapper";
 import { PortfolioProvider } from "@/lib/portfolio-context";
 import { getPortfolioData } from "@/lib/sanity/portfolio";
 import {
@@ -29,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: data.siteMetadata.description,
     keywords: data.siteMetadata.keywords,
     authors: [{ name: data.personalInfo.name }],
-    metadataBase: new URL(data.siteMetadata.url || "https://localhost:3000"),
+    metadataBase: new URL(data.siteMetadata.url || "http://localhost:3000"),
     alternates: { canonical: "/" },
     openGraph: {
       title: data.siteMetadata.title,
@@ -91,22 +89,24 @@ export default async function Home() {
         }}
       />
 
-      <PageTransition>
-        <StarsWrapper>
-          <div className="min-h-screen text-neutral-50">
-            <Navbar />
-            <main>
-              <HeroSection />
-              <AboutSection />
-              <ExperienceSection />
-              <SkillsSection />
-              <ProjectsSection />
-              <ContactSection />
-            </main>
-            <Footer />
-          </div>
-        </StarsWrapper>
-      </PageTransition>
+      <div id="top" className="min-h-screen">
+        <a
+          href="#main"
+          className="sr-only rounded-md bg-white px-4 py-2 text-sm font-medium text-neutral-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[60]"
+        >
+          Skip to content
+        </a>
+        <Navbar />
+        <main id="main" tabIndex={-1} className="outline-none">
+          <HeroSection />
+          <AboutSection />
+          <ExperienceSection />
+          <ProjectsSection />
+          <SkillsSection />
+          <ContactSection />
+        </main>
+        <Footer />
+      </div>
     </PortfolioProvider>
   );
 }

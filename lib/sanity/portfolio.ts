@@ -1,8 +1,10 @@
 import { cache } from "react";
-import type { PortfolioPageData } from "@/lib/types";
-import { client, imageUrl } from "./client";
+import type { PortfolioPageData, RunStep, RunStepKind } from "@/lib/types";
+import { client, imageUrl, imageUrlAtWidth } from "./client";
 import { PORTFOLIO_QUERY } from "./queries";
 import type { PORTFOLIO_QUERY_RESULT } from "./sanity.types";
+
+const RUN_KINDS = new Set<RunStepKind>(["read", "check", "plan", "approve", "write"]);
 
 /**
  * Fetches all published portfolio content from Sanity.
@@ -24,18 +26,33 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
 
   // Validation isn't enforced on documents written by scripts, so every
   // field still gets a default.
-  const projects = data.projects.map((p) => ({
-    id: p._id,
-    title: p.title ?? "",
-    description: p.description ?? "",
-    longDescription: p.longDescription ?? undefined,
-    categories: (p.categories ?? []).filter(Boolean),
-    tags: p.tags ?? [],
-    image: imageUrl(p.image, 128, 128),
-    github: p.githubUrl ?? null,
-    demo: p.demoUrl ?? null,
-    featured: p.featured ?? false,
-  }));
+  const projects = data.projects.map((p) => {
+    const artifactUrl = imageUrlAtWidth(p.artifact, 1600);
+    const dims = p.artifact?.dimensions;
+    return {
+      id: p._id,
+      title: p.title ?? "",
+      description: p.description ?? "",
+      longDescription: p.longDescription ?? undefined,
+      categories: (p.categories ?? []).filter(Boolean),
+      tags: p.tags ?? [],
+      image: artifactUrl || imageUrl(p.image, 1200, 630),
+      github: p.githubUrl ?? null,
+      demo: p.demoUrl ?? null,
+      caseStudy: p.caseStudy ?? false,
+      caseStudyPoints: p.caseStudyPoints ?? [],
+      artifact:
+        artifactUrl && dims?.width && dims?.height
+          ? {
+              url: artifactUrl,
+              width: dims.width,
+              height: dims.height,
+              alt: p.artifact?.alt ?? "",
+              caption: p.artifact?.caption ?? "",
+            }
+          : null,
+    };
+  });
 
   const usedCategories = new Set(projects.flatMap((p) => p.categories));
 
@@ -44,13 +61,27 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
       name: profile.name ?? "",
       role: profile.role ?? "",
       tagline: profile.tagline ?? "",
+      headline: profile.headline ?? "",
       description: profile.heroDescription ?? "",
       aboutDescription: profile.aboutDescription ?? "",
       email: profile.email ?? "",
       location: profile.location ?? "",
       availability: profile.availability ?? "",
-      image: imageUrl(profile.photo, 640, 640),
+      image: imageUrl(profile.photo, 160, 160),
       resume: profile.resumeUrl ?? "",
+      proofPoints: (profile.proofPoints ?? [])
+        .filter((p) => p.value && p.label)
+        .map((p) => ({ value: p.value ?? "", label: p.label ?? "" })),
+      runTraceTitle: profile.runTraceTitle ?? "",
+      runTrace: (profile.runTrace ?? [])
+        .filter((s): s is RunStep => RUN_KINDS.has(s.kind as RunStepKind) && Boolean(s.text))
+        .map((s) => ({ kind: s.kind, text: s.text })),
+      guardrails: (profile.guardrails ?? []).map((g) => ({
+        label: g.label ?? "",
+        title: g.title ?? "",
+        body: g.body ?? "",
+        seenIn: g.seenIn ?? "",
+      })),
     },
     socialLinks: {
       linkedin: profile.linkedinUrl ?? "",
@@ -64,6 +95,12 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
       period: x.period ?? "",
       location: x.location ?? "",
       summary: x.summary ?? "",
+      systems: (x.systems ?? []).map((s) => ({
+        name: s.name ?? "",
+        actsOn: s.actsOn ?? "",
+        guardrail: s.guardrail ?? "",
+        result: s.result ?? "",
+      })),
       highlights: x.highlights ?? [],
       skills: x.skills ?? [],
     })),

@@ -1,99 +1,132 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { usePortfolio } from "@/lib/portfolio-context";
+import { NAV_ITEMS } from "@/lib/nav";
 
-const navItems = [
-  { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
-  { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
-  { label: "Contact", href: "#contact" },
-];
+/** Tracks which section is under the navbar, for aria-current and styling. */
+function useActiveSection() {
+  const [active, setActive] = useState("");
+
+  useEffect(() => {
+    const sections = NAV_ITEMS.map((item) => document.querySelector(item.href)).filter(
+      (el): el is Element => el !== null
+    );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+        }
+      },
+      // A thin band near the top of the viewport decides the active section.
+      { rootMargin: "-30% 0px -65% 0px" }
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  return active;
+}
 
 export function Navbar() {
   const { personalInfo } = usePortfolio();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const active = useActiveSection();
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-black/60 backdrop-blur-md border-b border-neutral-800/50"
-          : "bg-transparent"
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        isScrolled || menuOpen ? "border-b border-white/10 bg-ink/85 backdrop-blur-md" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <nav aria-label="Main" className="mx-auto max-w-6xl px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           <Link
-            href="/"
-            className="text-sm font-medium tracking-tight text-neutral-200 hover:opacity-70 transition-opacity"
+            href="#top"
+            className="text-sm font-medium tracking-tight text-neutral-100 transition-opacity hover:opacity-70"
           >
             {personalInfo.name}
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-neutral-400 hover:text-neutral-50 transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          <ul className="hidden items-center gap-1 md:flex">
+            {NAV_ITEMS.map((item) => {
+              const isActive = active === item.href;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    aria-current={isActive ? "true" : undefined}
+                    className={`inline-flex min-h-9 items-center rounded-md px-3 text-sm transition-colors ${
+                      isActive ? "text-white" : "text-neutral-400 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
 
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-neutral-400 hover:text-neutral-50 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            className="-mr-2 flex size-11 items-center justify-center text-neutral-300 transition-colors hover:text-white md:hidden"
+          >
+            {menuOpen ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
+          </button>
         </div>
-      </div>
+      </nav>
 
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {menuOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden bg-black/80 backdrop-blur-md border-t border-neutral-800"
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden border-t border-white/10 md:hidden"
           >
-            <div className="px-6 py-4 space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-3 text-sm text-neutral-400 hover:text-neutral-50 transition-colors min-h-[44px] flex items-center"
-                >
-                  {item.label}
-                </Link>
+            <ul className="px-6 py-3">
+              {NAV_ITEMS.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    aria-current={active === item.href ? "true" : undefined}
+                    className={`flex min-h-11 items-center text-base transition-colors ${
+                      active === item.href ? "text-white" : "text-neutral-300 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 }

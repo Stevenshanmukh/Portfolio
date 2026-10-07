@@ -6,8 +6,49 @@ export const profile = {
   name: 'Steven Lagadapati',
   role: 'AI & Automation Engineer',
   tagline: 'LLM agents, MCP integrations and marketing data automation',
+  headline: 'AI agents that act on live business data. Nothing gets written until a person signs off.',
   heroDescription:
-    'I build LLM agents and data pipelines that work on live business systems: ad platforms, Google Slides, WordPress and Shopify. My agents check their numbers against the source data, and nothing gets written until a person signs off.',
+    'I build LLM agents and data pipelines for ad platforms, Google Slides, WordPress and Shopify, with checks against the source data built in.',
+  proofPoints: [
+    {value: '~25', label: 'client accounts on automated reporting'},
+    {value: '23', label: 'passing tests at Phase 1 of the Slides agent'},
+    {value: '~$0.30', label: 'per automated prospect audit'},
+    {value: '3.8', label: 'GPA, M.S. Data Science and Analytics'},
+  ],
+  runTraceTitle: 'Slides reporting agent',
+  runTrace: [
+    {kind: 'read', text: "Pull last month's ad data (read-only)"},
+    {kind: 'check', text: 'Totals match the source data'},
+    {kind: 'plan', text: 'Draft the deck changes'},
+    {kind: 'approve', text: 'Plan approved'},
+    {kind: 'write', text: 'Client deck updated'},
+  ],
+  guardrails: [
+    {
+      label: 'read-only',
+      title: 'Sources stay read-only',
+      body: "Agents read source files and live ad data. They can't change them.",
+      seenIn: 'Slides reporting agent',
+    },
+    {
+      label: 'verify',
+      title: 'Numbers get checked',
+      body: 'Every AI summary is checked against the source data before anyone sees it.',
+      seenIn: 'Daily and monthly client reporting',
+    },
+    {
+      label: 'sign-off',
+      title: 'A person approves the plan',
+      body: 'The agent proposes what it will change. Nothing is written until someone signs off.',
+      seenIn: 'Slides reporting agent, team build standard',
+    },
+    {
+      label: 'rollback',
+      title: 'Changes can be undone',
+      body: 'Edits can be rolled back, and unsafe updates are blocked before they land.',
+      seenIn: 'WordPress MCP gateway, Shopify and Sage X3 sync',
+    },
+  ],
   aboutDescription:
     "I'm an AI & Automation Engineer at Blue Forest Digital, a performance marketing agency, where I automate reporting for about 25 client accounts and build Claude Agent SDK agents and MCP integrations. I work end to end in Python, TypeScript and Next.js. Before that I built LLM content pipelines at ThinkBubble and analyzed futures and options data at Futures First. I hold an M.S. in Data Science and Analytics from Florida Atlantic University.",
   email: 'stevenlagadapati1012@gmail.com',
@@ -54,13 +95,43 @@ export const experience = [
     location: 'Remote',
     summary:
       'Performance marketing agency running Google Ads, Meta, Bing and SEO for ecommerce, DTC and B2B clients.',
-    highlights: [
-      'Built a Claude Agent SDK reporting agent that refreshes client Google Slides decks from live ad data. Source files stay read-only, and a person approves the plan before any write. Phase 1 shipped with 23 passing automated tests.',
-      'Automated daily and monthly reporting for about 25 client accounts, piping Windsor.ai ad data into Sheets dashboards, Slides decks and a weekday Slack pacing digest. Every AI summary is checked against the source data.',
-      "Shipped a prospect audit platform that scores a company's paid ads, SEO, AI-search visibility and site quality from public data, then produces a branded outreach PDF for about $0.30 per audit.",
-      'Built a WordPress MCP gateway that lets AI assistants edit and roll back client site content with no per-employee credentials, chosen over four other architectures after read, edit and rollback tests.',
-      'Fixed four inherited data-integrity failures in a Shopify and Sage X3 B2B sync that replaces legacy Workato workflows, adding safeguards that block unsafe updates and flag ambiguous company records.',
-      'Built a RAG chatbot over team meeting notes with hybrid pgvector search, Claude query rewriting and Google Drive sync.',
+    systems: [
+      {
+        name: 'Slides reporting agent',
+        actsOn: 'Client Google Slides decks, live ad data',
+        guardrail: 'Read-only sources; a person approves the plan',
+        result: 'Phase 1 shipped with 23 passing tests',
+      },
+      {
+        name: 'Client reporting pipeline',
+        actsOn: 'Windsor.ai data into Sheets, Slides and Slack',
+        guardrail: 'Every AI summary checked against the source',
+        result: 'Daily and monthly reports for ~25 accounts',
+      },
+      {
+        name: 'Prospect audit platform',
+        actsOn: "A company's paid ads, SEO, AI-search visibility and site",
+        guardrail: 'Public data only',
+        result: 'Branded outreach PDF for ~$0.30 per audit',
+      },
+      {
+        name: 'WordPress MCP gateway',
+        actsOn: 'Client WordPress site content',
+        guardrail: 'Rollback; no per-employee credentials',
+        result: 'Chosen over four other designs after testing',
+      },
+      {
+        name: 'Shopify and Sage X3 sync',
+        actsOn: 'B2B orders and company records',
+        guardrail: 'Blocks unsafe updates; flags ambiguous records',
+        result: 'Fixed four inherited data-integrity failures',
+      },
+      {
+        name: 'Meeting-notes chatbot',
+        actsOn: 'Team meeting notes, synced from Google Drive',
+        guardrail: '',
+        result: 'Hybrid pgvector search with Claude query rewriting',
+      },
     ],
     skills: ['Claude Agent SDK', 'MCP', 'Python', 'TypeScript', 'Next.js', 'PostgreSQL', 'Windsor.ai'],
   },
@@ -101,7 +172,10 @@ type SeedProject = {
   tags: string[]
   githubUrl?: string
   demoUrl?: string
-  featured: boolean
+  caseStudy?: boolean
+  caseStudyPoints?: string[]
+  /** Screenshot uploaded by `seed --assets=<dir>`; file name inside that dir. */
+  artifact?: {file: string; alt: string; caption: string}
 }
 
 const gh = (repo: string) => `https://github.com/Stevenshanmukh/${repo}`
@@ -118,7 +192,18 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation'],
     tags: ['FastAPI', 'PostgreSQL', 'pgvector', 'LangChain', 'scispaCy', 'Next.js', 'Docker'],
     githubUrl: gh('medintel-ai'),
-    featured: true,
+    caseStudy: true,
+    caseStudyPoints: [
+      'One endpoint routes each question to SQL or to retrieval',
+      'Refuses requests for clinical advice',
+      'Cross-encoder reranking over pgvector search',
+      'Ten failure cases documented with their fixes',
+    ],
+    artifact: {
+      file: 'medintel-07-rag-narrative.png',
+      alt: 'MedIntel AI clinical query screen: a narrative answer about symptom progression, with reranked evidence from visit transcripts',
+      caption: 'Narrative answer with reranked evidence. Synthetic patient data.',
+    },
   },
   {
     title: 'CartBuddy',
@@ -130,7 +215,6 @@ export const projects: SeedProject[] = [
     tags: ['Next.js', 'Supabase', 'TypeScript', 'PWA', 'Zustand', 'Vitest'],
     githubUrl: gh('Cartbuddy'),
     demoUrl: 'https://cartbuddy-one.vercel.app',
-    featured: true,
   },
   {
     title: 'UI/UX Design Consultant Skill',
@@ -141,7 +225,6 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation'],
     tags: ['Claude Code', 'Python', 'Accessibility', 'WCAG'],
     githubUrl: gh('Claude_UI-UX-Design-Consultant-Skill'),
-    featured: false,
   },
   {
     title: 'Vehicle Price Prediction',
@@ -153,7 +236,6 @@ export const projects: SeedProject[] = [
     tags: ['Python', 'XGBoost', 'Optuna', 'scikit-learn', 'Streamlit'],
     githubUrl: gh('vehicle-sales-prediction'),
     demoUrl: 'https://vehicle-sales-prediction.streamlit.app',
-    featured: true,
   },
   {
     title: 'n8n AI Automation Workflows',
@@ -164,7 +246,18 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation'],
     tags: ['n8n', 'OpenAI', 'MCP', 'JavaScript'],
     githubUrl: gh('n8n-ai-automation'),
-    featured: false,
+    caseStudy: true,
+    caseStudyPoints: [
+      'Customer support routing with AI responses',
+      'Lead scoring and routing',
+      'AI onboarding agent',
+      'Invoice processing and approval',
+      'Data enrichment and CRM sync',
+      'AI-written email sequences',
+      'Daily operations report',
+      'Candidate screening',
+      'Autonomous supply-chain agent',
+    ],
   },
   {
     title: 'VettedCV',
@@ -175,7 +268,18 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation', 'Full-Stack'],
     tags: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL', 'OpenAI', 'Claude'],
     githubUrl: gh('vetted-cv'),
-    featured: false,
+    caseStudy: true,
+    caseStudyPoints: [
+      'Match score and ATS keyword check for any job description',
+      'Five resume strategies, from max ATS to stretch role',
+      'Kanban board for tracking applications',
+      'Bring your own key for OpenAI, Anthropic, Google or Perplexity, stored encrypted',
+    ],
+    artifact: {
+      file: 'vettedcv-dashboard_completeness.png',
+      alt: 'VettedCV dashboard showing profile completeness, application count and recent activity for a demo user',
+      caption: 'Dashboard with a demo account.',
+    },
   },
   {
     title: 'Pneumonia X-ray Classification',
@@ -186,7 +290,6 @@ export const projects: SeedProject[] = [
     categories: ['Machine Learning'],
     tags: ['PyTorch', 'Vision Transformer', 'Grad-CAM', 'ONNX', 'Streamlit'],
     githubUrl: gh('pneumonia-xray-classification'),
-    featured: true,
   },
   {
     title: 'PaylessCars',
@@ -197,7 +300,6 @@ export const projects: SeedProject[] = [
     categories: ['Full-Stack'],
     tags: ['Next.js', 'TypeScript', 'Django REST', 'PostgreSQL', 'Docker'],
     githubUrl: gh('Paylesscars'),
-    featured: false,
   },
   {
     title: 'DataAnalyze Skill',
@@ -208,7 +310,6 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation'],
     tags: ['Claude Code', 'Python', 'scikit-learn', 'SHAP', 'Plotly'],
     githubUrl: gh('DataAnalyze_Claude-Skill'),
-    featured: false,
   },
   {
     title: 'GhostWriter',
@@ -219,7 +320,6 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation'],
     tags: ['Python', 'Whisper', 'customtkinter'],
     githubUrl: gh('Ghost_writer'),
-    featured: false,
   },
   {
     title: 'Brief Digest',
@@ -231,7 +331,6 @@ export const projects: SeedProject[] = [
     tags: ['Make.com', 'Perplexity', 'Google Sheets', 'Base44'],
     githubUrl: gh('Brief_Digest'),
     demoUrl: 'https://briefdigest.base44.app',
-    featured: false,
   },
   {
     title: 'Anime Recommender',
@@ -243,7 +342,6 @@ export const projects: SeedProject[] = [
     tags: ['LightGBM', 'FAISS', 'SHAP', 'scikit-learn', 'Streamlit'],
     githubUrl: gh('Anime-Recommender-System'),
     demoUrl: 'https://anime-recommender-system-1.streamlit.app',
-    featured: false,
   },
   {
     title: 'Meet Your Macros',
@@ -255,7 +353,6 @@ export const projects: SeedProject[] = [
     tags: ['Next.js', 'TypeScript', 'Zustand', 'Vitest', 'Playwright'],
     githubUrl: gh('Meet-Your-Macros'),
     demoUrl: 'https://meet-your-macros.vercel.app',
-    featured: false,
   },
   {
     title: 'Retail Analytics',
@@ -266,7 +363,6 @@ export const projects: SeedProject[] = [
     categories: ['Analytics & BI'],
     tags: ['Python', 'statsmodels', 'scikit-learn', 'Plotly', 'Streamlit'],
     githubUrl: gh('Retail-analytics-project'),
-    featured: false,
   },
   {
     title: 'Power BI Dashboards',
@@ -277,7 +373,6 @@ export const projects: SeedProject[] = [
     categories: ['Analytics & BI'],
     tags: ['Power BI', 'DAX', 'Python'],
     githubUrl: gh('Power_bi'),
-    featured: false,
   },
 ]
 

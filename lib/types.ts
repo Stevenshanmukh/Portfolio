@@ -1,16 +1,26 @@
+export interface Artifact {
+  url: string;
+  width: number;
+  height: number;
+  alt: string;
+  caption: string;
+}
+
 export interface Project {
   id: string;
   title: string;
   description: string;
-  /** Shown in the "show more" modal; falls back to `description`. */
+  /** Shown when a project is expanded; falls back to `description`. */
   longDescription?: string;
   categories: string[];
   tags: string[];
-  /** Absolute image URL, or "" when none is set. */
+  /** Absolute image URL for structured data, or "" when none is set. */
   image: string;
   github: string | null;
   demo: string | null;
-  featured: boolean;
+  caseStudy: boolean;
+  caseStudyPoints: string[];
+  artifact: Artifact | null;
 }
 
 export interface SkillCategory {
@@ -22,6 +32,13 @@ export interface SkillCategory {
   items: string[];
 }
 
+export interface ExperienceSystem {
+  name: string;
+  actsOn: string;
+  guardrail: string;
+  result: string;
+}
+
 export interface Experience {
   id: string;
   role: string;
@@ -31,6 +48,8 @@ export interface Experience {
   period: string;
   location: string;
   summary: string;
+  /** Ledger rows; when present they replace `highlights`. */
+  systems: ExperienceSystem[];
   highlights: string[];
   skills: string[];
 }
@@ -45,11 +64,31 @@ export interface Education {
   skills: string[];
 }
 
+export type RunStepKind = "read" | "check" | "plan" | "approve" | "write";
+
+export interface RunStep {
+  kind: RunStepKind;
+  text: string;
+}
+
+export interface Guardrail {
+  label: string;
+  title: string;
+  body: string;
+  seenIn: string;
+}
+
+export interface ProofPoint {
+  value: string;
+  label: string;
+}
+
 export interface PortfolioPageData {
   personalInfo: {
     name: string;
     role: string;
     tagline: string;
+    headline: string;
     description: string;
     aboutDescription: string;
     email: string;
@@ -59,6 +98,10 @@ export interface PortfolioPageData {
     image: string;
     /** Absolute PDF URL, or "" when none is uploaded. */
     resume: string;
+    proofPoints: ProofPoint[];
+    runTraceTitle: string;
+    runTrace: RunStep[];
+    guardrails: Guardrail[];
   };
   socialLinks: {
     linkedin: string;
@@ -69,7 +112,7 @@ export interface PortfolioPageData {
   certifications: string[];
   skills: SkillCategory[];
   projects: Project[];
-  /** Filter tabs, in Studio order; only categories that have projects. */
+  /** Category order from Studio; only categories that have projects. */
   projectCategories: string[];
   siteMetadata: {
     title: string;

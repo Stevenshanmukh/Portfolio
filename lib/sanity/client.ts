@@ -23,6 +23,22 @@ export const client = createClient({
 const builder = createImageUrlBuilder({ projectId, dataset });
 
 /**
+ * CDN URL for a Sanity image at a given width, keeping its aspect ratio,
+ * or "" when no image is set.
+ */
+export function imageUrlAtWidth(
+  image: { asset?: { _ref: string } | null } | null | undefined,
+  width: number
+): string {
+  if (!image?.asset?._ref) return "";
+  return builder
+    .image(image as SanityImageSource)
+    .width(width)
+    .auto("format")
+    .url();
+}
+
+/**
  * Cropped CDN URL for a Sanity image field (respects its hotspot/crop),
  * or "" when no image is set.
  */

@@ -1,5 +1,5 @@
 import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const experience = defineType({
   name: 'experience',
@@ -30,10 +30,30 @@ export const experience = defineType({
       description: 'One line about the company or team.',
     }),
     defineField({
+      name: 'systems',
+      title: 'Systems built',
+      type: 'array',
+      description:
+        'Shown as a table: one row per system you shipped. When this has rows, it replaces the highlights below.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'system',
+          fields: [
+            defineField({name: 'name', type: 'string', validation: (r) => r.required()}),
+            defineField({name: 'actsOn', title: 'Acts on', type: 'string', description: 'The live systems or data it touches.'}),
+            defineField({name: 'guardrail', type: 'string', description: 'What keeps it safe. Leave empty if none.'}),
+            defineField({name: 'result', type: 'string', description: 'A real outcome or number.'}),
+          ],
+          preview: {select: {title: 'name', subtitle: 'result'}},
+        }),
+      ],
+    }),
+    defineField({
       name: 'highlights',
       type: 'array',
       of: [{type: 'text', rows: 2}],
-      description: 'What you built or changed. One item per bullet.',
+      description: 'What you built or changed, one item per bullet. Used when "Systems built" is empty.',
     }),
     defineField({
       name: 'skills',

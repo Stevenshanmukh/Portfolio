@@ -1,25 +1,58 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-lora), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@theme {
+  /* Page ground: one flat near-black, no gradient. */
+  --color-ink: #0b0b0c;
+  /* The only accent. It means "approved / signed off" and is used for nothing else. */
+  --color-approved: oklch(0.8 0.13 152);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {
-  scroll-behavior: smooth;
-  background-color: #030014;
+  background-color: var(--color-ink);
+  color-scheme: dark;
   overscroll-behavior: none;
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+  scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
-  background-color: #030014;
+  background-color: var(--color-ink);
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar — thin, monochrome */
+/* Browser surfaces, themed from the palette. */
+::selection {
+  background-color: rgb(250 250 250 / 0.92);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid #fafafa;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+a {
+  text-underline-offset: 0.22em;
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -27,160 +60,135 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.12);
-  border-radius: 3px;
+  background-color: rgb(255 255 255 / 0.16);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgb(255 255 255 / 0.26);
 }
 
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.12);
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
+/* Anchored sections clear the fixed navbar. */
+section[id] {
+  scroll-margin-top: 4.5rem;
 }
 
-/* ===== Box Loader ===== */
+/* ===== Run trace (hero) =====
+   Each step's timing comes from --at (start) and, for the approve step,
+   --hold (how long it waits for sign-off). The resting styles are the final
+   state, so the panel reads correctly with animations off or CSS-only. */
 
-@layer base {
-  .box-loader-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 150px;
-    height: 150px;
-    perspective: 600px;
-  }
+.run-step {
+  animation: run-step-in 380ms var(--ease-out-expo) both;
+  animation-delay: var(--at);
+}
 
-  .boxes {
-    --size: 32px;
-    --duration: 800ms;
-    height: calc(var(--size) * 2);
-    width: calc(var(--size) * 3);
-    position: relative;
-    transform-style: preserve-3d;
-    transform-origin: 50% 50%;
-    transform: rotateX(60deg) rotateZ(45deg) rotateY(0deg) translateZ(0px);
-  }
+.run-done {
+  animation: run-pop 280ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--at) + 240ms);
+}
 
-  .boxes .box {
-    width: var(--size);
-    height: var(--size);
-    top: 0;
-    left: 0;
-    position: absolute;
-    transform-style: preserve-3d;
-  }
+.run-done-approve {
+  animation-delay: calc(var(--at) + var(--hold) + 160ms);
+}
 
-  .boxes .box-1 {
-    transform: translate(100%, 0);
-    animation: box1 var(--duration) linear infinite;
-  }
+.run-awaiting {
+  opacity: 0;
+  animation: run-awaiting var(--hold) linear both;
+  animation-delay: var(--at);
+}
 
-  .boxes .box-2 {
-    transform: translate(0, 100%);
-    animation: box2 var(--duration) linear infinite;
-  }
+.run-caret {
+  animation: run-blink 0.65s steps(2, jump-none) 2;
+  animation-delay: var(--at);
+}
 
-  .boxes .box-3 {
-    transform: translate(100%, 100%);
-    animation: box3 var(--duration) linear infinite;
-  }
+.run-approved {
+  animation: run-approved 360ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--at) + var(--hold));
+}
 
-  .boxes .box-4 {
-    transform: translate(200%, 0);
-    animation: box4 var(--duration) linear infinite;
-  }
+.run-approve-label {
+  animation: run-tint 360ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--at) + var(--hold));
+}
 
-  .boxes .box .face {
-    position: absolute;
-    width: var(--size);
-    height: var(--size);
-  }
+/* Paused until the panel scrolls into view (set by RunTrace on narrow screens). */
+.run-trace[data-waiting] * {
+  animation-play-state: paused;
+}
 
-  .boxes .box .face-front {
-    background: rgba(255, 255, 255, 0.9);
-    top: 0;
-    left: 0;
-  }
-
-  .boxes .box .face-right {
-    background: rgba(255, 255, 255, 0.5);
-    right: 0;
-    top: 0;
-    transform: rotateY(90deg);
-    transform-origin: top right;
-  }
-
-  .boxes .box .face-top {
-    background: rgba(255, 255, 255, 0.3);
-    bottom: 0;
-    left: 0;
-    transform: rotateX(-90deg);
-    transform-origin: bottom left;
-  }
-
-  .boxes .box .face-back {
-    background: rgba(255, 255, 255, 0.08);
-    top: 0;
-    left: 0;
-    transform: translateZ(calc(var(--size) * -1));
+@keyframes run-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 
-@keyframes box1 {
+@keyframes run-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
 
+@keyframes run-awaiting {
   0%,
-  50% {
-    transform: translate(100%, 0);
+  99.9% {
+    opacity: 1;
   }
-
   100% {
-    transform: translate(200%, 0);
+    opacity: 0;
   }
 }
 
-@keyframes box2 {
-  0% {
-    transform: translate(0, 100%);
+@keyframes run-blink {
+  from {
+    opacity: 1;
   }
-
-  50% {
-    transform: translate(0, 0);
-  }
-
-  100% {
-    transform: translate(100%, 0);
+  to {
+    opacity: 0;
   }
 }
 
-@keyframes box3 {
-
-  0%,
-  50% {
-    transform: translate(100%, 100%);
-  }
-
-  100% {
-    transform: translate(0, 100%);
+@keyframes run-approved {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(2px);
   }
 }
 
-@keyframes box4 {
-  0% {
-    transform: translate(200%, 0);
+@keyframes run-tint {
+  from {
+    color: var(--color-neutral-400);
   }
+}
 
-  50% {
-    transform: translate(200%, 100%);
-  }
+/* ===== Experience ledger =====
+   Guardrail checks land row by row once the table scrolls into view.
+   Visible by default; LedgerTable arms them only when JS is running. */
 
-  100% {
-    transform: translate(100%, 100%);
+.ledger[data-armed] .ledger-check {
+  opacity: 0;
+}
+
+.ledger[data-played] .ledger-check {
+  opacity: 1;
+  animation: run-pop 300ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--row) * 110ms + 120ms);
+}
+
+/* ===== Reduced motion =====
+   Movement collapses to its end state; colour and state changes still show. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

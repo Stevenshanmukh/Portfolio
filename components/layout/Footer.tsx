@@ -3,88 +3,76 @@
 import Link from "next/link";
 import { ArrowUp } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
+import { NAV_ITEMS } from "@/lib/nav";
 
-const navigation = [
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#projects" },
-  { name: "Contact", href: "#contact" },
-];
+const linkClass = "inline-flex min-h-9 items-center text-sm text-neutral-400 transition-colors hover:text-white";
 
 export function Footer() {
   const { personalInfo, socialLinks } = usePortfolio();
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   };
 
   return (
-    <footer className="border-t border-neutral-800">
-      <div className="max-w-4xl mx-auto px-6 lg:px-8 py-16">
-        <div className="flex flex-col md:flex-row justify-between gap-12">
-          <div className="space-y-3 max-w-xs">
-            <p className="text-sm font-medium text-neutral-200">{personalInfo.name}</p>
-            <p className="text-sm text-neutral-500 leading-relaxed">
-              {personalInfo.tagline}
-            </p>
-          </div>
+    <footer className="border-t border-white/10 px-6 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 py-14 md:flex-row md:items-start md:justify-between">
+        <div className="max-w-xs">
+          <p className="text-sm font-medium text-neutral-100">{personalInfo.name}</p>
+          {personalInfo.tagline && (
+            <p className="mt-2 text-sm leading-relaxed text-neutral-400">{personalInfo.tagline}</p>
+          )}
+        </div>
 
-          <div className="flex gap-16">
-            <div className="space-y-3">
-              <p className="text-xs uppercase tracking-widest text-neutral-500">
-                Navigation
-              </p>
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="block text-sm text-neutral-500 hover:text-neutral-50 transition-colors"
-                >
-                  {item.name}
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-12 gap-y-6">
+          <ul className="grid gap-1">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className={linkClass}>
+                  {item.label}
                 </Link>
-              ))}
-            </div>
+              </li>
+            ))}
+          </ul>
+          <ul className="grid content-start gap-1">
+            {socialLinks.github && (
+              <li>
+                <Link href={socialLinks.github} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  GitHub<span className="sr-only"> (opens in a new tab)</span>
+                </Link>
+              </li>
+            )}
+            {socialLinks.linkedin && (
+              <li>
+                <Link href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                  LinkedIn<span className="sr-only"> (opens in a new tab)</span>
+                </Link>
+              </li>
+            )}
+            {personalInfo.email && (
+              <li>
+                <Link href={`mailto:${personalInfo.email}`} className={linkClass}>
+                  Email
+                </Link>
+              </li>
+            )}
+          </ul>
+        </nav>
+      </div>
 
-            <div className="space-y-3">
-              <p className="text-xs uppercase tracking-widest text-neutral-500">
-                Connect
-              </p>
-              <Link
-                href={socialLinks.github}
-                target="_blank"
-                className="block text-sm text-neutral-500 hover:text-neutral-50 transition-colors"
-              >
-                GitHub
-              </Link>
-              <Link
-                href={socialLinks.linkedin}
-                target="_blank"
-                className="block text-sm text-neutral-500 hover:text-neutral-50 transition-colors"
-              >
-                LinkedIn
-              </Link>
-              <Link
-                href={`mailto:${personalInfo.email}`}
-                className="block text-sm text-neutral-500 hover:text-neutral-50 transition-colors"
-              >
-                Email
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mt-16 pt-8 border-t border-neutral-800">
-          <p className="text-xs text-neutral-500">
-            &copy; {new Date().getFullYear()} {personalInfo.name}
-          </p>
-          <button
-            onClick={scrollToTop}
-            className="p-2 text-neutral-500 hover:text-neutral-50 transition-colors"
-            aria-label="Scroll to top"
-          >
-            <ArrowUp className="w-4 h-4" />
-          </button>
-        </div>
+      <div className="mx-auto flex max-w-6xl items-center justify-between border-t border-white/10 py-6">
+        <p className="text-xs text-neutral-400">
+          &copy; {new Date().getFullYear()} {personalInfo.name}
+        </p>
+        <button
+          type="button"
+          onClick={scrollToTop}
+          aria-label="Back to top"
+          className="flex size-11 items-center justify-center text-neutral-400 transition-colors hover:text-white"
+        >
+          <ArrowUp aria-hidden="true" className="size-4" />
+        </button>
       </div>
     </footer>
   );
