@@ -43,6 +43,30 @@ export const project = defineType({
       initialValue: false,
     }),
     defineField({
+      name: 'context',
+      type: 'string',
+      description:
+        'Optional line under the title, e.g. "Built at Blue Forest Digital. Client work, so there is no public repo."',
+      hidden: ({document}) => !document?.caseStudy,
+    }),
+    defineField({
+      name: 'actsOn',
+      title: 'Acts on',
+      type: 'string',
+      description: 'Optional. With Guardrail and Result, shown as a summary panel when there is no screenshot.',
+      hidden: ({document}) => !document?.caseStudy,
+    }),
+    defineField({
+      name: 'guardrail',
+      type: 'string',
+      hidden: ({document}) => !document?.caseStudy,
+    }),
+    defineField({
+      name: 'result',
+      type: 'string',
+      hidden: ({document}) => !document?.caseStudy,
+    }),
+    defineField({
       name: 'caseStudyPoints',
       title: 'Case study points',
       type: 'array',

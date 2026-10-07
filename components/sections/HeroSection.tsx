@@ -58,7 +58,11 @@ export function HeroSection() {
           </p>
 
           {personalInfo.proofPoints.length > 0 && (
-            <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-white/10 pt-6 sm:grid-cols-4">
+            <ul
+              className={`mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-white/10 pt-6 ${
+                personalInfo.proofPoints.length >= 4 ? "sm:grid-cols-4" : "sm:grid-cols-3"
+              }`}
+            >
               {personalInfo.proofPoints.map((point) => (
                 <li key={point.label} className="min-w-0">
                   <span className="block font-mono text-base tabular-nums text-white">{point.value}</span>

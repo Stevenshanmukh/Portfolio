@@ -25,6 +25,7 @@ export const PORTFOLIO_QUERY = defineQuery(`{
     _id, title, description, longDescription,
     "categories": categories[]->title,
     tags, image, githubUrl, demoUrl, caseStudy, caseStudyPoints,
+    context, actsOn, guardrail, result,
     artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }
   },
   "skills": *[_type == "skillCategory"] | order(orderRank) {

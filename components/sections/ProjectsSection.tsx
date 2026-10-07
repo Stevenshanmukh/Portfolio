@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUpRight, ChevronDown, Github } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePortfolio } from "@/lib/portfolio-context";
@@ -72,9 +72,39 @@ function PointsPanel({ points }: { points: string[] }) {
   );
 }
 
+/** Ledger-style summary for case studies with no screenshot (e.g. client work). */
+function SummaryPanel({ project }: { project: Project }) {
+  const rows = [
+    { label: "Acts on", value: project.summary.actsOn },
+    { label: "Guardrail", value: project.summary.guardrail },
+    { label: "Result", value: project.summary.result },
+  ].filter((row) => row.value);
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.025]">
+      <p className="border-b border-white/10 px-5 py-3.5 font-mono text-xs text-neutral-200">{project.title}</p>
+      <dl className="divide-y divide-white/[0.06] px-5">
+        {rows.map((row) => (
+          <div key={row.label} className="grid gap-1 py-4 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-4">
+            <dt className="text-sm text-neutral-400">{row.label}</dt>
+            <dd className="flex gap-2 text-neutral-200">
+              {row.label === "Guardrail" && (
+                <Check aria-hidden="true" className="mt-1 size-3.5 shrink-0 text-approved" />
+              )}
+              <span>{row.value}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
 function CaseStudy({ project, flip }: { project: Project; flip: boolean }) {
   const titleId = useId();
   const { artifact, caseStudyPoints: points } = project;
+  const hasSummary = Boolean(project.summary.actsOn || project.summary.guardrail || project.summary.result);
+  const hasLinks = Boolean(project.github || project.demo);
 
   return (
     <article
@@ -88,6 +118,7 @@ function CaseStudy({ project, flip }: { project: Project; flip: boolean }) {
         {project.categories.length > 0 && (
           <p className="mt-2 text-sm text-neutral-400">{project.categories.join(" · ")}</p>
         )}
+        {project.context && <p className="mt-1 text-sm text-neutral-400">{project.context}</p>}
         <p className="mt-5 max-w-[60ch] text-lg leading-relaxed text-neutral-200">{project.description}</p>
         {project.longDescription && (
           <p className="mt-4 max-w-[60ch] leading-relaxed text-neutral-300">{project.longDescription}</p>
@@ -105,9 +136,11 @@ function CaseStudy({ project, flip }: { project: Project; flip: boolean }) {
         {project.tags.length > 0 && (
           <p className="mt-6 text-sm text-neutral-400">{project.tags.join(" · ")}</p>
         )}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <ProjectLinks project={project} variant="outline" />
-        </div>
+        {hasLinks && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <ProjectLinks project={project} variant="outline" />
+          </div>
+        )}
       </div>
 
       <div className={flip ? "lg:order-1" : ""}>
@@ -127,6 +160,8 @@ function CaseStudy({ project, flip }: { project: Project; flip: boolean }) {
               <figcaption className="mt-3 text-sm text-neutral-400">{artifact.caption}</figcaption>
             )}
           </figure>
+        ) : hasSummary ? (
+          <SummaryPanel project={project} />
         ) : (
           points.length > 0 && <PointsPanel points={points} />
         )}

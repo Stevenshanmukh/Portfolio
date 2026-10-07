@@ -19,8 +19,18 @@ export interface Project {
   github: string | null;
   demo: string | null;
   caseStudy: boolean;
+  /** Optional line under a case study's title. */
+  context: string;
+  /** Ledger-style summary for case studies without a screenshot ("" when unset). */
+  summary: CaseStudySummary;
   caseStudyPoints: string[];
   artifact: Artifact | null;
+}
+
+export interface CaseStudySummary {
+  actsOn: string;
+  guardrail: string;
+  result: string;
 }
 
 export interface SkillCategory {

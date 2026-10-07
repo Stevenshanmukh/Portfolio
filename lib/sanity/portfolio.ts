@@ -40,6 +40,12 @@ export const getPortfolioData = cache(async (): Promise<PortfolioPageData> => {
       github: p.githubUrl ?? null,
       demo: p.demoUrl ?? null,
       caseStudy: p.caseStudy ?? false,
+      context: p.context ?? "",
+      summary: {
+        actsOn: p.actsOn ?? "",
+        guardrail: p.guardrail ?? "",
+        result: p.result ?? "",
+      },
       caseStudyPoints: p.caseStudyPoints ?? [],
       artifact:
         artifactUrl && dims?.width && dims?.height

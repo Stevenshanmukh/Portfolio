@@ -92,6 +92,10 @@ export type Project = {
   >;
   tags?: Array<string>;
   caseStudy?: boolean;
+  context?: string;
+  actsOn?: string;
+  guardrail?: string;
+  result?: string;
   caseStudyPoints?: Array<string>;
   artifact?: {
     asset?: SanityImageAssetReference;
@@ -362,7 +366,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../lib/sanity/queries.ts
 // Variable: PORTFOLIO_QUERY
-// Query: {  "profile": *[_type == "profile" && _id == "profile"][0]{    name, role, tagline, headline, heroDescription, aboutDescription, email,    location, availability, photo, "resumeUrl": resume.asset->url,    proofPoints[]{ value, label },    runTraceTitle,    runTrace[]{ kind, text },    guardrails[]{ label, title, body, seenIn },    certifications, githubUrl, linkedinUrl  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, url, ogImage, keywords  },  "experience": *[_type == "experience"] | order(orderRank) {    _id, role, company, companyUrl, period, location, summary,    systems[]{ name, actsOn, guardrail, result },    highlights, skills  },  "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },  "projects": *[_type == "project"] | order(orderRank) {    _id, title, description, longDescription,    "categories": categories[]->title,    tags, image, githubUrl, demoUrl, caseStudy, caseStudyPoints,    artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }  },  "skills": *[_type == "skillCategory"] | order(orderRank) {    _id, name, icon, description, items  },  "education": *[_type == "education"] | order(orderRank) {    _id, institution, degree, period, status, description, skills  }}
+// Query: {  "profile": *[_type == "profile" && _id == "profile"][0]{    name, role, tagline, headline, heroDescription, aboutDescription, email,    location, availability, photo, "resumeUrl": resume.asset->url,    proofPoints[]{ value, label },    runTraceTitle,    runTrace[]{ kind, text },    guardrails[]{ label, title, body, seenIn },    certifications, githubUrl, linkedinUrl  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, url, ogImage, keywords  },  "experience": *[_type == "experience"] | order(orderRank) {    _id, role, company, companyUrl, period, location, summary,    systems[]{ name, actsOn, guardrail, result },    highlights, skills  },  "categories": *[_type == "projectCategory"] | order(orderRank) { _id, title },  "projects": *[_type == "project"] | order(orderRank) {    _id, title, description, longDescription,    "categories": categories[]->title,    tags, image, githubUrl, demoUrl, caseStudy, caseStudyPoints,    context, actsOn, guardrail, result,    artifact{ asset, alt, caption, "dimensions": asset->metadata.dimensions{ width, height } }  },  "skills": *[_type == "skillCategory"] | order(orderRank) {    _id, name, icon, description, items  },  "education": *[_type == "education"] | order(orderRank) {    _id, institution, degree, period, status, description, skills  }}
 export type PORTFOLIO_QUERY_RESULT = {
   profile: {
     name: string;
@@ -453,6 +457,10 @@ export type PORTFOLIO_QUERY_RESULT = {
     demoUrl: string | null;
     caseStudy: boolean | null;
     caseStudyPoints: Array<string> | null;
+    context: string | null;
+    actsOn: string | null;
+    guardrail: string | null;
+    result: string | null;
     artifact: {
       asset: SanityImageAssetReference | null;
       alt: string | null;

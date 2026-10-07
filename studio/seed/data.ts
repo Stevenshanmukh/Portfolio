@@ -6,14 +6,13 @@ export const profile = {
   name: 'Steven Lagadapati',
   role: 'AI & Automation Engineer',
   tagline: 'LLM agents, MCP integrations and marketing data automation',
-  headline: 'AI agents that act on live business data. Nothing gets written until a person signs off.',
+  headline: 'AI agents for live business data. Every write is checked. The risky ones wait for sign-off.',
   heroDescription:
     'I build LLM agents and data pipelines for ad platforms, Google Slides, WordPress and Shopify, with checks against the source data built in.',
   proofPoints: [
     {value: '~25', label: 'client accounts on automated reporting'},
-    {value: '23', label: 'passing tests at Phase 1 of the Slides agent'},
+    {value: '6', label: 'systems built at Blue Forest Digital'},
     {value: '~$0.30', label: 'per automated prospect audit'},
-    {value: '3.8', label: 'GPA, M.S. Data Science and Analytics'},
   ],
   runTraceTitle: 'Slides reporting agent',
   runTrace: [
@@ -173,6 +172,10 @@ type SeedProject = {
   githubUrl?: string
   demoUrl?: string
   caseStudy?: boolean
+  context?: string
+  actsOn?: string
+  guardrail?: string
+  result?: string
   caseStudyPoints?: string[]
   /** Screenshot uploaded by `seed --assets=<dir>`; file name inside that dir. */
   artifact?: {file: string; alt: string; caption: string}
@@ -183,6 +186,21 @@ const gh = (repo: string) => `https://github.com/Stevenshanmukh/${repo}`
 // Order here is the display order. It mixes categories so the first six
 // cards show the full range.
 export const projects: SeedProject[] = [
+  {
+    // Employer work: CV facts only, no client names, data or screenshots.
+    title: 'Slides reporting agent',
+    description:
+      'A Claude Agent SDK agent that refreshes client Google Slides decks from live ad data, without touching the source files.',
+    longDescription:
+      'It reads the ad data and source files but cannot change them, drafts a plan for what it will update, and waits for a person to approve that plan before it writes to the deck.',
+    categories: ['AI & Automation'],
+    tags: ['Claude Agent SDK', 'Google Slides'],
+    caseStudy: true,
+    context: 'Built at Blue Forest Digital. Client work, so there is no public repo.',
+    actsOn: 'Client Google Slides decks, live ad data',
+    guardrail: 'Read-only sources; a person approves the plan before any write',
+    result: 'Phase 1 shipped with 23 passing automated tests',
+  },
   {
     title: 'MedIntel AI',
     description:
@@ -246,7 +264,6 @@ export const projects: SeedProject[] = [
     categories: ['AI & Automation'],
     tags: ['n8n', 'OpenAI', 'MCP', 'JavaScript'],
     githubUrl: gh('n8n-ai-automation'),
-    caseStudy: true,
     caseStudyPoints: [
       'Customer support routing with AI responses',
       'Lead scoring and routing',
