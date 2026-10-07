@@ -6,6 +6,8 @@ export default defineCliConfig({
     dataset: 'production',
   },
   deployment: {
+    // Hosted at https://stevenlagadapati.sanity.studio
+    appId: 'codhdca86smrt8t1swkc47md',
     autoUpdates: true,
   },
   typegen: {
