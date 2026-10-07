@@ -1,64 +1,31 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import {
-  personalInfo as defaultPersonalInfo,
-  education as defaultEducation,
-  skills as defaultSkills,
-  projects as defaultProjects,
-  socialLinks as defaultSocialLinks,
-  siteMetadata as defaultSiteMetadata,
-} from "@/data/portfolio";
-import type { SkillCategory, Project } from "@/lib/types";
+import type { PortfolioPageData } from "@/lib/types";
 
-interface PortfolioContextValue {
-  personalInfo: typeof defaultPersonalInfo;
-  education: typeof defaultEducation;
-  skills: Record<string, SkillCategory>;
-  projects: Project[];
-  socialLinks: typeof defaultSocialLinks;
-  siteMetadata: typeof defaultSiteMetadata;
-}
-
-const defaults: PortfolioContextValue = {
-  personalInfo: defaultPersonalInfo,
-  education: defaultEducation,
-  skills: defaultSkills,
-  projects: defaultProjects,
-  socialLinks: defaultSocialLinks,
-  siteMetadata: defaultSiteMetadata,
-};
-
-const PortfolioContext = createContext<PortfolioContextValue>(defaults);
+const PortfolioContext = createContext<PortfolioPageData | null>(null);
 
 /**
- * Provides portfolio data to all sections.
- * Accepts `serverData` from the server component (fetched from Supabase).
- * Falls back to static data/portfolio.ts defaults.
+ * Provides the portfolio content (fetched from Sanity on the server) to all sections.
  */
 export function PortfolioProvider({
   children,
-  serverData,
+  data,
 }: {
   children: React.ReactNode;
-  serverData?: Partial<PortfolioContextValue>;
+  data: PortfolioPageData;
 }) {
-  const value: PortfolioContextValue = {
-    personalInfo: serverData?.personalInfo ?? defaults.personalInfo,
-    education: serverData?.education ?? defaults.education,
-    skills: serverData?.skills ?? defaults.skills,
-    projects: serverData?.projects ?? defaults.projects,
-    socialLinks: serverData?.socialLinks ?? defaults.socialLinks,
-    siteMetadata: serverData?.siteMetadata ?? defaults.siteMetadata,
-  };
-
   return (
-    <PortfolioContext.Provider value={value}>
+    <PortfolioContext.Provider value={data}>
       {children}
     </PortfolioContext.Provider>
   );
 }
 
 export function usePortfolio() {
-  return useContext(PortfolioContext);
+  const data = useContext(PortfolioContext);
+  if (!data) {
+    throw new Error("usePortfolio must be used inside <PortfolioProvider>");
+  }
+  return data;
 }

@@ -6,11 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "studio": "npm --prefix studio run dev",
+    "typegen": "npm --prefix studio run typegen"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.95.3",
+    "@sanity/client": "^8.9.0",
+    "@sanity/image-url": "^2.1.1",
     "clsx": "^2.1.1",
+    "groq": "^6.18.0",
     "lucide-react": "^0.562.0",
     "motion": "^12.33.0",
     "next": "^16.1.6",

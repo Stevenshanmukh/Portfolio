@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "motion/react";
 import { useRef, useState } from "react";
-import { Download, Linkedin, Github, Mail } from "lucide-react";
+import { Award, Download, Linkedin, Github, Mail } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePortfolio } from "@/lib/portfolio-context";
@@ -41,7 +41,7 @@ function ProfileImage({ src, name }: { src: string; name: string }) {
 }
 
 export function AboutSection() {
-  const { personalInfo, education, socialLinks } = usePortfolio();
+  const { personalInfo, education, certifications, socialLinks } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
@@ -82,14 +82,16 @@ export function AboutSection() {
 
               {/* CTAs */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Link
-                  href={personalInfo.resume}
-                  target="_blank"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-950 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Resume</span>
-                </Link>
+                {personalInfo.resume && (
+                  <Link
+                    href={personalInfo.resume}
+                    target="_blank"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-neutral-950 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Resume</span>
+                  </Link>
+                )}
                 <Link
                   href={socialLinks.linkedin}
                   target="_blank"
@@ -107,7 +109,7 @@ export function AboutSection() {
                   <Github className="w-4 h-4" />
                 </Link>
                 <Link
-                  href={`mailto:${socialLinks.email}`}
+                  href={`mailto:${personalInfo.email}`}
                   className="p-2.5 border border-neutral-700 rounded-lg text-neutral-400 hover:text-neutral-50 hover:border-neutral-500 transition-colors"
                   aria-label="Email"
                 >
@@ -118,12 +120,16 @@ export function AboutSection() {
           </div>
 
           {/* Education */}
-          {education.map((edu, index) => (
+          {education.map((edu) => (
             <div
-              key={index}
+              key={edu.id}
               className="mt-16 p-8 border border-neutral-700/50 rounded-2xl bg-white/[0.02]"
             >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+              <div
+                className={`flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 ${
+                  edu.description || edu.skills.length > 0 ? "mb-4" : ""
+                }`}
+              >
                 <div>
                   <h3 className="font-serif text-xl font-semibold tracking-tight mb-1 text-white">
                     {edu.institution}
@@ -131,27 +137,58 @@ export function AboutSection() {
                   <p className="text-neutral-400">{edu.degree}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-sm text-neutral-500">{edu.period}</span>
-                  <span className="px-2.5 py-1 border border-neutral-700 rounded-full text-xs font-medium text-neutral-300">
-                    {edu.status}
-                  </span>
+                  {edu.period && (
+                    <span className="text-sm text-neutral-500">{edu.period}</span>
+                  )}
+                  {edu.status && (
+                    <span className="px-2.5 py-1 border border-neutral-700 rounded-full text-xs font-medium text-neutral-300">
+                      {edu.status}
+                    </span>
+                  )}
                 </div>
               </div>
-              <p className="text-neutral-400 mb-6 leading-relaxed">
-                {edu.description}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {edu.skills.map((skill, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1.5 border border-neutral-700 rounded-lg text-xs font-medium text-neutral-400"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
+              {edu.description && (
+                <p className="text-neutral-400 mb-6 leading-relaxed">
+                  {edu.description}
+                </p>
+              )}
+              {edu.skills.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {edu.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1.5 border border-neutral-700 rounded-lg text-xs font-medium text-neutral-400"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
+
+          {/* Certifications & awards */}
+          {certifications.length > 0 && (
+            <div className="mt-8 p-8 border border-neutral-700/50 rounded-2xl bg-white/[0.02]">
+              <h3 className="font-serif text-xl font-semibold tracking-tight mb-4 text-white">
+                Certifications &amp; awards
+              </h3>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {certifications.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-3 text-neutral-400 leading-relaxed"
+                  >
+                    <Award
+                      aria-hidden="true"
+                      className="w-4 h-4 mt-1 text-neutral-500 shrink-0"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

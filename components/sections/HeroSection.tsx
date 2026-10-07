@@ -74,13 +74,15 @@ export function HeroSection() {
             >
               View Projects
             </Link>
-            <Link
-              href={personalInfo.resume}
-              target="_blank"
-              className="px-6 py-3 border border-neutral-600 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/5 transition-colors"
-            >
-              Resume
-            </Link>
+            {personalInfo.resume && (
+              <Link
+                href={personalInfo.resume}
+                target="_blank"
+                className="px-6 py-3 border border-neutral-600 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/5 transition-colors"
+              >
+                Resume
+              </Link>
+            )}
           </motion.div>
 
           {/* Social icons */}

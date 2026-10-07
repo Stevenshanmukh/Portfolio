@@ -1,8 +1,8 @@
-import type { PortfolioPageData } from "@/lib/supabase/queries";
+import type { PortfolioPageData } from "@/lib/types";
 
 /**
  * Generates JSON-LD structured data for the portfolio.
- * Accepts data as parameter so it works with both static and Supabase data.
+ * Image URLs are absolute Sanity CDN URLs; empty values are left out.
  */
 
 export function getPersonJsonLd(data: PortfolioPageData) {
@@ -12,9 +12,11 @@ export function getPersonJsonLd(data: PortfolioPageData) {
     name: data.personalInfo.name,
     jobTitle: data.personalInfo.role,
     description: data.personalInfo.description,
-    email: `mailto:${data.personalInfo.email}`,
+    ...(data.personalInfo.email && {
+      email: `mailto:${data.personalInfo.email}`,
+    }),
     url: data.siteMetadata.url,
-    image: `${data.siteMetadata.url}${data.personalInfo.image}`,
+    ...(data.personalInfo.image && { image: data.personalInfo.image }),
     address: {
       "@type": "PostalAddress",
       addressLocality: data.personalInfo.location,
@@ -23,7 +25,7 @@ export function getPersonJsonLd(data: PortfolioPageData) {
       "@type": "EducationalOrganization",
       name: edu.institution,
     })),
-    knowsAbout: Object.values(data.skills).flatMap((category) => category.items),
+    knowsAbout: data.skills.flatMap((category) => category.items),
     sameAs: [data.socialLinks.linkedin, data.socialLinks.github].filter(Boolean),
   };
 }
@@ -49,7 +51,7 @@ export function getProjectsJsonLd(data: PortfolioPageData) {
     "@type": "ItemList",
     name: "Portfolio Projects",
     description:
-      "Data Science, Machine Learning, and Web Development projects by " +
+      "AI, automation, full-stack and machine learning projects by " +
       data.personalInfo.name,
     numberOfItems: data.projects.length,
     itemListElement: data.projects.map((project, index) => ({
@@ -60,15 +62,13 @@ export function getProjectsJsonLd(data: PortfolioPageData) {
         name: project.title,
         description: project.description,
         abstract: project.longDescription,
-        image: project.image.startsWith("http")
-          ? project.image
-          : `${data.siteMetadata.url}${project.image}`,
+        ...(project.image && { image: project.image }),
         author: {
           "@type": "Person",
           name: data.personalInfo.name,
         },
         keywords: project.tags.join(", "),
-        genre: project.category,
+        genre: project.categories,
         ...(project.github && { codeRepository: project.github }),
         ...(project.demo && { url: project.demo }),
       },

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yourportfolio.vercel.app/sitemap.xml
+Sitemap: https://stevenlagadapati.vercel.app/sitemap.xml

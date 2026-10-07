@@ -11,14 +11,6 @@ import type { Project } from "@/lib/types";
 /** Number of projects to show per batch. Change this to adjust pagination size. */
 const BATCH_SIZE = 6;
 
-const FALLBACK_CATEGORIES = [
-  "All",
-  "Machine Learning",
-  "Data Science",
-  "Web Dev",
-  "Research",
-];
-
 function ProjectThumbnail({ src, title }: { src: string; title: string }) {
   const [failed, setFailed] = useState(false);
   const hasImage = src && src.startsWith("http") && !failed;
@@ -54,19 +46,14 @@ function ProjectThumbnail({ src, title }: { src: string; title: string }) {
 }
 
 export function ProjectsSection() {
-  const { projects, siteMetadata } = usePortfolio();
+  const { projects, projectCategories } = usePortfolio();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
   const [activeCategory, setActiveCategory] = useState("All");
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [expandedProject, setExpandedProject] = useState<Project | null>(null);
 
-  // Use dynamic categories from metadata if available, otherwise fallback
-  const categories = ["All", ...(siteMetadata?.projectCategories || [])];
-  if (categories.length === 1) {
-    const fallback = ["Machine Learning", "Data Science", "Web Dev", "Research"];
-    categories.push(...fallback);
-  }
+  const categories = ["All", ...projectCategories];
 
   const handleCategoryChange = useCallback((category: string) => {
     setActiveCategory(category);
@@ -76,12 +63,7 @@ export function ProjectsSection() {
   const filteredProjects =
     activeCategory === "All"
       ? projects
-      : projects.filter((project) => {
-        if (project.categories && project.categories.length > 0) {
-          return project.categories.includes(activeCategory);
-        }
-        return project.category === activeCategory;
-      });
+      : projects.filter((project) => project.categories.includes(activeCategory));
 
   const visibleProjects = filteredProjects.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProjects.length;
@@ -103,25 +85,27 @@ export function ProjectsSection() {
             Selected Projects
           </h2>
           <p className="text-neutral-400 max-w-xl mb-12">
-            A collection of academic research and personal experiments in Data
-            Science, Machine Learning, and Web Development.
+            Open-source work on GitHub: AI agents and automations, full-stack
+            apps, machine learning models and dashboards.
           </p>
 
           {/* Filter tabs */}
-          <div className="flex flex-wrap gap-2 mb-12">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategoryChange(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeCategory === category
-                  ? "bg-white text-neutral-950"
-                  : "text-neutral-500 hover:text-neutral-50"
-                  }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+          {projectCategories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-12">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryChange(category)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeCategory === category
+                    ? "bg-white text-neutral-950"
+                    : "text-neutral-500 hover:text-neutral-50"
+                    }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Projects grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-12">
@@ -204,7 +188,8 @@ function ProjectCard({
     }
   }, [project]);
 
-  const needsShowMore = isClamped || tagsOverflow;
+  const needsShowMore =
+    isClamped || tagsOverflow || Boolean(project.longDescription);
 
   return (
     <div className="p-6 border border-neutral-700/50 rounded-2xl hover:border-neutral-600 transition-colors flex flex-col gap-4 h-full bg-white/[0.02]">
@@ -221,9 +206,9 @@ function ProjectCard({
             )}
           </div>
           <div className="flex flex-wrap gap-1 mt-1">
-            {(project.categories || [project.category]).map((cat, i) => (
-              <span key={i} className="text-xs uppercase tracking-widest text-neutral-500">
-                {cat}{i < (project.categories?.length || 1) - 1 ? " • " : ""}
+            {project.categories.map((cat, i) => (
+              <span key={cat} className="text-xs uppercase tracking-widest text-neutral-500">
+                {cat}{i < project.categories.length - 1 ? " • " : ""}
               </span>
             ))}
           </div>
@@ -359,13 +344,13 @@ function ProjectModal({
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {(project.categories || [project.category]).map((cat, i) => (
+                  {project.categories.map((cat, i) => (
                     <span
-                      key={i}
+                      key={cat}
                       className="text-xs uppercase tracking-widest text-neutral-500"
                     >
                       {cat}
-                      {i < (project.categories?.length || 1) - 1 ? " • " : ""}
+                      {i < project.categories.length - 1 ? " • " : ""}
                     </span>
                   ))}
                 </div>
