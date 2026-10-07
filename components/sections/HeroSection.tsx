@@ -6,7 +6,7 @@ import { Github, Linkedin } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
 import { RunTrace } from "./RunTrace";
 
-/** Splits "First sentence. The rest." so the second part can sit dimmer. */
+/** Splits "First sentence. The rest." so the second, distinctive part can lead visually. */
 function splitHeadline(headline: string): [string, string] {
   const match = headline.match(/^(.+?[.!?])\s+(.+)$/);
   return match ? [match[1], match[2]] : [headline, ""];
@@ -44,8 +44,13 @@ export function HeroSection() {
             id="hero-title"
             className="max-w-[22ch] text-balance font-serif text-[clamp(2.25rem,4.4vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-white"
           >
-            {lead}
-            {rest && <span className="text-neutral-400"> {rest}</span>}
+            {rest ? (
+              <>
+                <span className="text-neutral-400">{lead}</span> {rest}
+              </>
+            ) : (
+              lead
+            )}
           </h1>
 
           <p className="mt-6 max-w-[56ch] text-lg leading-relaxed text-neutral-300">

@@ -1,88 +1,37 @@
 "use client";
 
-import { Award } from "lucide-react";
 import { usePortfolio } from "@/lib/portfolio-context";
 
 export function AboutSection() {
-  const { personalInfo, education, certifications } = usePortfolio();
+  const { personalInfo } = usePortfolio();
   const bio = personalInfo.aboutDescription || personalInfo.description;
 
   return (
     <section id="about" aria-labelledby="about-title" className="px-6 py-20 md:py-28 lg:px-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
-          <div>
-            <h2
-              id="about-title"
-              className="font-serif text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
-            >
-              How I build agents
-            </h2>
-            {bio && <p className="mt-6 max-w-[60ch] leading-relaxed text-neutral-300">{bio}</p>}
-          </div>
-
-          {personalInfo.guardrails.length > 0 && (
-            <ol className="divide-y divide-white/10 border-y border-white/10">
-              {personalInfo.guardrails.map((rule) => (
-                <li
-                  key={rule.title}
-                  className="grid gap-2 py-6 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-6"
-                >
-                  <span className="pt-1 font-mono text-xs text-neutral-400">{rule.label}</span>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{rule.title}</h3>
-                    <p className="mt-1.5 max-w-[60ch] leading-relaxed text-neutral-300">{rule.body}</p>
-                    {rule.seenIn && (
-                      <p className="mt-2 text-sm text-neutral-400">Seen in: {rule.seenIn}</p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          )}
+      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <h2
+            id="about-title"
+            className="font-serif text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
+          >
+            How I build agents
+          </h2>
+          {bio && <p className="mt-6 max-w-[62ch] leading-relaxed text-neutral-300">{bio}</p>}
         </div>
 
-        {(education.length > 0 || certifications.length > 0) && (
-          <div className="mt-20 grid gap-12 border-t border-white/10 pt-12 md:grid-cols-2">
-            {education.length > 0 && (
-              <div>
-                <h3 className="mb-5 text-sm font-medium text-neutral-400">Education</h3>
-                <ul className="space-y-6">
-                  {education.map((edu) => (
-                    <li key={edu.id}>
-                      <p className="font-medium text-white">{edu.institution}</p>
-                      <p className="text-neutral-300">{edu.degree}</p>
-                      {(edu.period || edu.status) && (
-                        <p className="mt-1 font-mono text-[13px] tabular-nums text-neutral-400">
-                          {[edu.period, edu.status].filter(Boolean).join(" · ")}
-                        </p>
-                      )}
-                      {edu.description && (
-                        <p className="mt-2 max-w-[60ch] leading-relaxed text-neutral-300">{edu.description}</p>
-                      )}
-                      {edu.skills.length > 0 && (
-                        <p className="mt-2 text-sm text-neutral-400">{edu.skills.join(" · ")}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {certifications.length > 0 && (
-              <div>
-                <h3 className="mb-5 text-sm font-medium text-neutral-400">Certifications &amp; awards</h3>
-                <ul className="space-y-3">
-                  {certifications.map((item) => (
-                    <li key={item} className="flex gap-3 leading-relaxed text-neutral-300">
-                      <Award aria-hidden="true" className="mt-1 size-4 shrink-0 text-neutral-400" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+        {personalInfo.guardrails.length > 0 && (
+          <ol className="divide-y divide-white/10 border-y border-white/10">
+            {personalInfo.guardrails.map((rule) => (
+              <li key={rule.title} className="grid gap-2 py-6 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-6">
+                <span className="pt-1 font-mono text-xs text-neutral-400">{rule.label}</span>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">{rule.title}</h3>
+                  <p className="mt-1.5 max-w-[62ch] leading-relaxed text-neutral-300">{rule.body}</p>
+                  {rule.seenIn && <p className="mt-2 text-sm text-neutral-400">Seen in: {rule.seenIn}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
         )}
       </div>
     </section>

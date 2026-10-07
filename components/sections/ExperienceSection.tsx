@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { usePortfolio } from "@/lib/portfolio-context";
 import type { Experience } from "@/lib/types";
+import { Credentials } from "./Credentials";
 import { LedgerTable } from "./LedgerTable";
 
 function CompanyName({ job }: { job: Experience }) {
@@ -45,7 +46,7 @@ function LedgerRole({ job }: { job: Experience }) {
         </div>
         <Meta job={job} />
       </div>
-      {job.summary && <p className="mt-3 max-w-[70ch] text-neutral-400">{job.summary}</p>}
+      {job.summary && <p className="mt-3 max-w-[62ch] text-neutral-400">{job.summary}</p>}
       <div className="mt-8">
         <LedgerTable systems={job.systems} caption={`Systems built as ${job.role} at ${job.company}`} />
       </div>
@@ -71,7 +72,7 @@ function CompactRole({ job }: { job: Experience }) {
           </span>
         </h4>
         {job.highlights.length > 0 && (
-          <ul className="mt-2 max-w-[70ch] space-y-1.5 text-neutral-300">
+          <ul className="mt-2 max-w-[62ch] space-y-1.5 text-neutral-300">
             {job.highlights.map((item) => (
               <li key={item} className="leading-relaxed">
                 {item}
@@ -126,6 +127,8 @@ export function ExperienceSection() {
             </ul>
           </div>
         )}
+
+        <Credentials />
       </div>
     </section>
   );

@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUpRight, Check, ChevronDown, Github } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePortfolio } from "@/lib/portfolio-context";
@@ -63,7 +63,7 @@ function PointsPanel({ points }: { points: string[] }) {
       </p>
       <ul className="divide-y divide-white/[0.06] px-5">
         {points.map((point) => (
-          <li key={point} className="py-3 font-mono text-[13px] text-neutral-200">
+          <li key={point} className="py-3 text-neutral-200">
             {point}
           </li>
         ))}
@@ -96,7 +96,7 @@ function CaseStudy({ project, flip }: { project: Project; flip: boolean }) {
           <ul className="mt-6 space-y-2.5">
             {points.map((point) => (
               <li key={point} className="flex gap-3 leading-relaxed text-neutral-300">
-                <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-neutral-400" />
+                <span aria-hidden="true" className="mt-[0.75em] h-px w-3 shrink-0 bg-neutral-500" />
                 <span>{point}</span>
               </li>
             ))}
@@ -144,7 +144,7 @@ function IndexRow({ project }: { project: Project }) {
     <li className="grid gap-3 py-5 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8">
       <div className="min-w-0">
         <h5 className="font-medium text-white">{project.title}</h5>
-        <p className="mt-1 max-w-[70ch] leading-relaxed text-neutral-300">{project.description}</p>
+        <p className="mt-1 max-w-[62ch] leading-relaxed text-neutral-300">{project.description}</p>
         {project.tags.length > 0 && (
           <p className="mt-2 text-sm text-neutral-400">{project.tags.slice(0, 5).join(" · ")}</p>
         )}
@@ -159,7 +159,7 @@ function IndexRow({ project }: { project: Project }) {
               transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden"
             >
-              <p className="max-w-[70ch] pt-3 leading-relaxed text-neutral-300">{project.longDescription}</p>
+              <p className="max-w-[62ch] pt-3 leading-relaxed text-neutral-300">{project.longDescription}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -169,7 +169,7 @@ function IndexRow({ project }: { project: Project }) {
           <button
             type="button"
             aria-expanded={open}
-            aria-controls={detailsId}
+            aria-controls={open ? detailsId : undefined}
             onClick={() => setOpen((v) => !v)}
             className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-sm font-medium text-neutral-300 transition-colors hover:bg-white/5 hover:text-white"
           >

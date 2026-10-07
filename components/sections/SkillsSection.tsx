@@ -27,7 +27,7 @@ export function SkillsSection() {
           id="skills-title"
           className="font-serif text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl"
         >
-          Tools
+          Skills
         </h2>
         <p className="mt-4 max-w-[60ch] text-neutral-300">
           The tools behind the agents, the data pipelines and the apps around them.
@@ -47,20 +47,7 @@ export function SkillsSection() {
                     )}
                   </span>
                 </dt>
-                <dd>
-                  <ul className="flex flex-wrap gap-x-1 gap-y-1.5 leading-relaxed text-neutral-200">
-                    {group.items.map((item, i) => (
-                      <li key={item}>
-                        {item}
-                        {i < group.items.length - 1 && (
-                          <span aria-hidden="true" className="ml-1 text-neutral-500">
-                            ·
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
+                <dd className="max-w-[70ch] leading-relaxed text-neutral-200">{group.items.join(", ")}</dd>
               </div>
             );
           })}

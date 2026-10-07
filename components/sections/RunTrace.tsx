@@ -104,6 +104,7 @@ export function RunTrace({ title, steps }: { title: string; steps: RunStep[] }) 
         <button
           type="button"
           onClick={() => setRun((n) => n + 1)}
+          aria-label="Replay the agent run"
           className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs text-neutral-400 transition-colors hover:text-white"
         >
           <RotateCcw aria-hidden="true" className="size-3.5" />

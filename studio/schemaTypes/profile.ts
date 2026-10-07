@@ -27,7 +27,7 @@ export const profile = defineType({
       type: 'string',
       group: 'hero',
       description:
-        'The big line in the hero. Write it as two sentences: the first is what you build, the second (shown dimmer) is what makes it different.',
+        'The big line in the hero. Write it as two sentences: the first (shown dimmer) is what you build, the second (shown bright) is what makes it different.',
       validation: (r) => r.max(110).warning('Long headlines wrap to many lines on phones.'),
     }),
     defineField({

@@ -69,7 +69,7 @@ export function ContactSection() {
                 className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/20 px-5 text-sm font-medium text-neutral-100 transition-colors hover:border-white/40 hover:bg-white/5"
               >
                 {status === "copied" ? (
-                  <Check aria-hidden="true" className="size-4 text-approved" />
+                  <Check aria-hidden="true" className="size-4" />
                 ) : (
                   <Copy aria-hidden="true" className="size-4" />
                 )}
@@ -84,6 +84,18 @@ export function ContactSection() {
               </span>
             </div>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              {personalInfo.resume && (
+                <Link
+                  href={personalInfo.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-9 items-center gap-1 text-neutral-300 underline decoration-white/25 hover:text-white hover:decoration-white"
+                >
+                  Resume
+                  <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                  <span className="sr-only"> (PDF, opens in a new tab)</span>
+                </Link>
+              )}
               {socialLinks.linkedin && (
                 <Link
                   href={socialLinks.linkedin}

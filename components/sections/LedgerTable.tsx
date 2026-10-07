@@ -59,8 +59,9 @@ export function LedgerTable({ systems, caption }: { systems: ExperienceSystem[];
               {system.actsOn}
             </td>
             <td className="text-neutral-300 md:py-4 md:pr-6 md:align-top">
+              <span className="text-sm text-neutral-400 md:hidden">Guardrail: </span>
               {system.guardrail ? (
-                <span className="flex gap-2">
+                <span className="inline-flex gap-2 md:flex">
                   <Check aria-hidden="true" className="ledger-check mt-1 size-3.5 shrink-0 text-approved" />
                   <span>{system.guardrail}</span>
                 </span>
@@ -71,7 +72,8 @@ export function LedgerTable({ systems, caption }: { systems: ExperienceSystem[];
                 </span>
               )}
             </td>
-            <td className="font-mono text-[13px] leading-relaxed text-neutral-200 md:py-4 md:align-top">
+            <td className="text-neutral-200 md:py-4 md:align-top">
+              <span className="text-sm text-neutral-400 md:hidden">Result: </span>
               {system.result}
             </td>
           </tr>

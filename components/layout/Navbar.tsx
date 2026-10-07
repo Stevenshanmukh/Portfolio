@@ -74,8 +74,8 @@ export function Navbar() {
                   <Link
                     href={item.href}
                     aria-current={isActive ? "true" : undefined}
-                    className={`inline-flex min-h-9 items-center rounded-md px-3 text-sm transition-colors ${
-                      isActive ? "text-white" : "text-neutral-400 hover:text-white"
+                    className={`inline-flex min-h-9 items-center rounded-md px-3 text-sm underline-offset-[6px] transition-colors ${
+                      isActive ? "text-white underline decoration-white/40" : "text-neutral-400 hover:text-white"
                     }`}
                   >
                     {item.label}
@@ -89,7 +89,7 @@ export function Navbar() {
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
+            aria-controls={menuOpen ? "mobile-menu" : undefined}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             className="-mr-2 flex size-11 items-center justify-center text-neutral-300 transition-colors hover:text-white md:hidden"
           >
