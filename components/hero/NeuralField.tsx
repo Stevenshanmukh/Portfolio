@@ -5,12 +5,12 @@ import { useEffect, useRef } from "react";
 type Node = { x: number; y: number; vx: number; vy: number };
 type Pulse = { a: Node; b: Node; t: number };
 
-const LINK_DISTANCE = 140;
+const LINK_DISTANCE = 130;
 const FRAME_MS = 1000 / 30; // 30fps is plenty for slow drift, and kinder to batteries
 const MAX_PULSES = 4;
 
 /**
- * A slow-drifting network of points behind the hero: nearby points join with
+ * A slow-drifting network of points behind the whole site: nearby points join with
  * faint lines, and now and then a pulse runs along a connection. It only
  * animates while visible, and draws a single still frame under reduced motion.
  */
@@ -39,7 +39,7 @@ export function NeuralField({ className = "" }: { className?: string }) {
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.min(72, Math.max(18, Math.round((width * height) / 15000)));
+      const count = Math.min(64, Math.max(16, Math.round((width * height) / 21000)));
       nodes = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -57,7 +57,7 @@ export function NeuralField({ className = "" }: { className?: string }) {
           const b = nodes[j];
           const d = Math.hypot(a.x - b.x, a.y - b.y);
           if (d < LINK_DISTANCE) {
-            ctx.strokeStyle = `rgba(250,250,250,${(1 - d / LINK_DISTANCE) * 0.16})`;
+            ctx.strokeStyle = `rgba(250,250,250,${(1 - d / LINK_DISTANCE) * 0.12})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -66,7 +66,7 @@ export function NeuralField({ className = "" }: { className?: string }) {
           }
         }
       }
-      ctx.fillStyle = "rgba(250,250,250,0.55)";
+      ctx.fillStyle = "rgba(250,250,250,0.4)";
       for (const n of nodes) {
         ctx.beginPath();
         ctx.arc(n.x, n.y, 1.3, 0, Math.PI * 2);
@@ -75,7 +75,7 @@ export function NeuralField({ className = "" }: { className?: string }) {
       for (const p of pulses) {
         const x = p.a.x + (p.b.x - p.a.x) * p.t;
         const y = p.a.y + (p.b.y - p.a.y) * p.t;
-        ctx.fillStyle = `rgba(250,250,250,${Math.sin(p.t * Math.PI) * 0.9})`;
+        ctx.fillStyle = `rgba(250,250,250,${Math.sin(p.t * Math.PI) * 0.7})`;
         ctx.beginPath();
         ctx.arc(x, y, 2, 0, Math.PI * 2);
         ctx.fill();

@@ -12,7 +12,7 @@ export function Credentials() {
   return (
     <div className="mt-12 grid gap-4 md:grid-cols-2">
       {education.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <div className="rounded-2xl border border-white/10 bg-panel/85 p-6">
           <div className="flex items-center gap-3">
             <IconTile icon={GraduationCap} size="sm" />
             <h3 className="font-semibold text-white">Education</h3>
@@ -37,7 +37,7 @@ export function Credentials() {
       )}
 
       {certifications.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <div className="rounded-2xl border border-white/10 bg-panel/85 p-6">
           <div className="flex items-center gap-3">
             <IconTile icon={Award} size="sm" />
             <h3 className="font-semibold text-white">Certifications &amp; awards</h3>

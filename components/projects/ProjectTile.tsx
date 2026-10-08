@@ -9,7 +9,7 @@ export function ProjectTile({ project, clamp = true }: { project: Project; clamp
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group flex h-full gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-white/25 hover:bg-white/[0.05]"
+      className="group flex h-full gap-4 rounded-2xl border border-white/10 bg-panel/85 p-5 transition-colors hover:border-white/25 hover:bg-panel"
     >
       <IconTile icon={iconFor(project.icon)} />
       <span className="min-w-0 flex-1">

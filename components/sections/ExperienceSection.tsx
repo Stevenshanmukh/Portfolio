@@ -56,7 +56,7 @@ function TimelineItem({ job }: { job: Experience }) {
       <span aria-hidden="true" className="relative hidden justify-center md:flex">
         <span className="timeline-dot mt-7 size-3 rounded-full border border-white/40 bg-ink" />
       </span>
-      <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <article className="rounded-2xl border border-white/10 bg-panel/85 p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
           <div>
             <h3 className="text-lg font-semibold text-white">{job.role}</h3>

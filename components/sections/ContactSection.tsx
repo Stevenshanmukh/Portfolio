@@ -12,7 +12,7 @@ export function ContactSection() {
 
   return (
     <section id="contact" aria-labelledby="contact-title" className="px-6 py-20 md:py-24 lg:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 rounded-2xl border border-white/10 bg-white/[0.03] p-7 md:p-10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 rounded-2xl border border-white/10 bg-panel/85 p-7 md:p-10 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2
             id="contact-title"

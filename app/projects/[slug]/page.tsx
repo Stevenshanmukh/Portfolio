@@ -97,7 +97,7 @@ export default async function ProjectPage({ params }: Props) {
           )}
 
           {summary.length > 0 && (
-            <dl className="mt-10 divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03]">
+            <dl className="mt-10 divide-y divide-white/10 rounded-2xl border border-white/10 bg-panel/85">
               {summary.map((row) => (
                 <div key={row.label} className="grid gap-1 px-6 py-4 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6">
                   <dt className="text-sm text-neutral-400">{row.label}</dt>
@@ -141,7 +141,7 @@ export default async function ProjectPage({ params }: Props) {
           {next && next.id !== project.id && (
             <Link
               href={`/projects/${next.slug}`}
-              className="group mt-16 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-white/25"
+              className="group mt-16 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-panel/85 p-5 transition-colors hover:border-white/25"
             >
               <span>
                 <span className="block text-sm text-neutral-400">Next project</span>

@@ -15,7 +15,7 @@ export function FeaturedProjectCard({
   const href = `/projects/${project.slug}`;
 
   return (
-    <article className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-3 transition-colors hover:border-white/20">
+    <article className="flex flex-col rounded-2xl border border-white/10 bg-panel/85 p-3 transition-colors hover:border-white/20">
       <div className="aspect-[16/10] overflow-hidden rounded-xl border border-white/10">
         <ProjectVisual
           project={project}

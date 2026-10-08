@@ -19,7 +19,7 @@ export function SkillsSection() {
         />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {skills.map((group) => (
-            <li key={group.id} className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <li key={group.id} className="flex gap-4 rounded-2xl border border-white/10 bg-panel/85 p-5">
               <IconTile icon={iconFor(group.icon)} />
               <div className="min-w-0">
                 <h3 className="font-semibold text-white">{group.name}</h3>

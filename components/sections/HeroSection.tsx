@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowRight, FileText, Mail } from "lucide-react";
 import { AgentRun } from "@/components/hero/AgentRun";
 import { Avatar } from "@/components/hero/Avatar";
-import { NeuralField } from "@/components/hero/NeuralField";
 import { usePortfolio } from "@/lib/portfolio-context";
 
 /** Splits "First sentence. The rest." so the second, distinctive part can lead visually. */
@@ -37,24 +36,16 @@ export function HeroSection() {
       aria-labelledby="hero-title"
       className="relative overflow-hidden px-6 pb-16 pt-28 md:pt-32 lg:px-8"
     >
-      <NeuralField className="pointer-events-none absolute inset-0 h-full w-full [mask-image:radial-gradient(ellipse_75%_70%_at_72%_38%,black_25%,transparent_75%)]" />
-
       <div className="relative mx-auto max-w-6xl">
-        <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
-          <div className="lg:pt-12">
-            <div className="mb-8 flex items-center gap-6 lg:hidden">
-              <Avatar src={personalInfo.image} name={personalInfo.name} size="sm" />
-              {personalInfo.availability && (
-                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-panel/95 px-3 py-1.5 text-xs text-neutral-200">
-                  <span aria-hidden="true" className="size-1.5 rounded-full bg-white" />
-                  {personalInfo.availability}
-                </p>
-              )}
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
+          <div>
+            <div className="mb-14 mt-6 flex justify-center lg:hidden">
+              <Avatar src={personalInfo.image} name={personalInfo.name} status={personalInfo.availability} size="md" />
             </div>
 
             <h1
               id="hero-title"
-              className="max-w-[20ch] text-balance text-[clamp(2.25rem,4.2vw,3.35rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-white"
+              className="max-w-[22ch] text-balance text-[clamp(2.25rem,4.3vw,3.55rem)] font-semibold leading-[1.04] tracking-[-0.03em] text-white"
             >
               {rest ? (
                 <>
@@ -94,12 +85,13 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="hidden pl-12 lg:block">
+          <div className="flex flex-col items-center">
+            {/* Portrait first, the run trace underneath: nothing covers the face. */}
+            <div className="mb-14 mt-16 hidden lg:block">
               <Avatar src={personalInfo.image} name={personalInfo.name} status={personalInfo.availability} />
             </div>
             {personalInfo.runTrace.length > 0 && (
-              <div className="relative lg:-mt-20 lg:ml-auto lg:w-[25.5rem]">
+              <div className="w-full max-w-[32rem]">
                 <AgentRun title={personalInfo.runTraceTitle} steps={personalInfo.runTrace} />
               </div>
             )}

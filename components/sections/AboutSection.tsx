@@ -26,7 +26,7 @@ export function AboutSection() {
             {personalInfo.guardrails.map((rule) => (
               <li
                 key={rule.title}
-                className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:block sm:p-6"
+                className="flex gap-4 rounded-2xl border border-white/10 bg-panel/85 p-5 sm:block sm:p-6"
               >
                 <IconTile icon={iconFor(rule.icon)} className="rounded-full" />
                 <div className="min-w-0 sm:mt-5">
