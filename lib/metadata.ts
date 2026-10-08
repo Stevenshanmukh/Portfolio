@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import type { PortfolioPageData } from "@/lib/types";
 
-/** Metadata shared by every page; pages override title, description and canonical. */
+/**
+ * Metadata shared by every page; pages override title, description and canonical.
+ * Share images come from the opengraph-image / twitter-image routes. Next only attaches them
+ * when `images` is absent here, so don't add an `images` key (even an undefined one).
+ */
 export function pageMetadata(
   data: PortfolioPageData,
-  page: { title?: string; description?: string; path: string; image?: string }
+  page: { title?: string; description?: string; path: string }
 ): Metadata {
   const title = page.title ?? data.siteMetadata.title;
   const description = page.description ?? data.siteMetadata.description;
-  const image = page.image || data.siteMetadata.image;
   const url = `${data.siteMetadata.url}${page.path === "/" ? "" : page.path}`;
 
   return {
@@ -23,15 +26,13 @@ export function pageMetadata(
       description,
       url,
       siteName: `${data.personalInfo.name} Portfolio`,
-      images: image ? [{ url: image, width: 1200, height: 630 }] : undefined,
       locale: "en_US",
       type: "website",
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: image ? [image] : undefined,
     },
     robots: {
       index: true,

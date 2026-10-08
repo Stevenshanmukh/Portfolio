@@ -28,7 +28,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${project.title} | ${data.personalInfo.name}`,
     description: project.description,
     path: `/projects/${project.slug}`,
-    image: project.artifact?.url,
   });
 }
 
